@@ -45,7 +45,7 @@ export default function DoctorDashboard() {
   // Role guard
   useEffect(() => {
     if (!isAuthenticated) { navigate('/'); return }
-    if (user?.role !== 'doctor' && user?.role !== 'admin') { navigate('/'); return }
+    if (user?.role !== 'doctor' && user?.role !== 'admin' && user?.role !== 'spiritual_leader') { navigate('/'); return }
   }, [isAuthenticated, user, navigate])
 
   useEffect(() => {
@@ -56,7 +56,8 @@ export default function DoctorDashboard() {
     ])
       .then(([docRes, chalRes]) => {
         setAppointments(docRes.data.data?.appointments || [])
-        const tProfile = docRes.data.data?.therapist
+        // Could be a therapist or spiritual leader
+        const tProfile = docRes.data.data?.therapist || docRes.data.data?.spirtualLeader || docRes.data.data?.spiritualLeader
         setTherapist(tProfile || null)
         if (tProfile && tProfile.status === 'approved' && !tProfile.termsAccepted) {
           setShowTerms(true)
@@ -141,7 +142,7 @@ export default function DoctorDashboard() {
     completed: appointments.filter(a => a.status === 'completed').length,
   }
 
-  if (!isAuthenticated || (user?.role !== 'doctor' && user?.role !== 'admin')) return null
+  if (!isAuthenticated || (user?.role !== 'doctor' && user?.role !== 'admin' && user?.role !== 'spiritual_leader')) return null
 
   if (therapist?.status === 'pending') {
     return (
@@ -208,12 +209,12 @@ export default function DoctorDashboard() {
             {user?.name?.charAt(0)?.toUpperCase()}
           </div>
           <div>
-            <p className="text-white/60 text-sm">Doctor Dashboard</p>
+            <p className="text-white/60 text-sm">{user?.role === 'spiritual_leader' ? 'Spiritual Guide Dashboard' : 'Doctor Dashboard'}</p>
             <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
             {therapist && (
               <p className="text-white/70 text-sm mt-0.5">
                 <Stethoscope className="inline w-3.5 h-3.5 mr-1" />
-                {therapist.specialization}
+                {therapist.specialization || therapist.religion}
               </p>
             )}
           </div>

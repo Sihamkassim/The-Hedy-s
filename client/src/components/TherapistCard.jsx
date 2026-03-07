@@ -5,7 +5,7 @@ function TherapistCard({ therapist }) {
   // Support both mock data (priceAmount) and API data (sessionPrice)
   const price = therapist.sessionPrice ?? therapist.priceAmount
   const isFree = price === 0 || price === null || therapist.isFree
-  const displayPrice = isFree ? 'Free' : (therapist.price ?? `$${price ?? '?'}/session`)
+  const displayPrice = isFree ? 'Free' : (therapist.price ?? `ETB${price ?? '?'}/session`)
   const initials = (therapist.name || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 
   return (

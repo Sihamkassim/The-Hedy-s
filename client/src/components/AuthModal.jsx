@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Leaf, Eye, EyeOff, Loader, Upload, User, Stethoscope, FileText, Award, Briefcase } from 'lucide-react'
+import { X, Leaf, Eye, EyeOff, Loader, Upload, User, Stethoscope, FileText, Award, Briefcase, Bird } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function AuthModal({ onClose }) {
@@ -15,6 +15,7 @@ export default function AuthModal({ onClose }) {
     experience: '',
     sessionPrice: '',
     bio: '',
+    religion: '',
   })
   const [profileImage, setProfileImage] = useState(null)
   const [degreeFile, setDegreeFile] = useState(null)
@@ -62,6 +63,19 @@ export default function AuthModal({ onClose }) {
           if (certificateFile) formData.append('certificateFile', certificateFile)
 
           await register(formData)
+        } else if (userType === 'spiritual') {
+          const formData = new FormData()
+          formData.append('name', form.name)
+          formData.append('email', form.email)
+          formData.append('password', form.password)
+          formData.append('role', 'spiritual_leader')
+          formData.append('religion', form.religion || 'Ethiopian Orthodox')
+          formData.append('specialization', form.specialization || 'Spiritual Support')
+          formData.append('experience', form.experience || '1')
+          formData.append('sessionPrice', form.sessionPrice || '0')
+          formData.append('bio', form.bio || 'New spiritual guide.')
+          
+          await register(formData)
         } else {
           await register({ name: form.name, email: form.email, password: form.password, role: 'user' })
         }
@@ -85,6 +99,7 @@ export default function AuthModal({ onClose }) {
       experience: '',
       sessionPrice: '',
       bio: '',
+      religion: '',
     })
     setProfileImage(null)
     setDegreeFile(null)
@@ -139,24 +154,33 @@ export default function AuthModal({ onClose }) {
         {mode === 'register' && (
           <div className="px-8 pt-6 pb-2">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">I am a</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <button type="button" onClick={() => switchUserType('user')}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold transition-all ${
                   userType === 'user'
                     ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}>
-                <User className="w-4 h-4" />
-                User / Patient
+                <User className="w-5 h-5 mb-1" />
+                Patient
               </button>
               <button type="button" onClick={() => switchUserType('therapist')}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold transition-all ${
                   userType === 'therapist'
                     ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}>
-                <Stethoscope className="w-4 h-4" />
+                <Stethoscope className="w-5 h-5 mb-1" />
                 Therapist
+              </button>
+              <button type="button" onClick={() => switchUserType('spiritual')}
+                className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold text-center transition-all ${
+                  userType === 'spiritual'
+                    ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
+                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                }`}>
+                <Bird className="w-5 h-5 mb-1" />
+                Spiritual Guide
               </button>
             </div>
           </div>
@@ -274,6 +298,51 @@ export default function AuthModal({ onClose }) {
                     <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                   </label>
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Spiritual Leader Extra Fields */}
+          {mode === 'register' && userType === 'spiritual' && (
+            <>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <Bird className="w-3 h-3" /> Religion / Affiliation
+                </label>
+                <input type="text" placeholder="e.g., Ethiopian Orthodox, Islam..." required value={form.religion}
+                  onChange={e => setForm({ ...form, religion: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                  <Briefcase className="w-3 h-3" /> Area of Guidance
+                </label>
+                <input type="text" placeholder="Family Counseling, Youth Empowerment..." required value={form.specialization}
+                  onChange={e => setForm({ ...form, specialization: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Years Experience</label>
+                  <input type="number" placeholder="e.g., 5" required value={form.experience}
+                    onChange={e => setForm({ ...form, experience: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Session Price (ETB)</label>
+                  <input type="number" placeholder="0 for free" value={form.sessionPrice}
+                    onChange={e => setForm({ ...form, sessionPrice: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>
+                <textarea placeholder="Tell us about your background and how you guide others..." rows={3} value={form.bio}
+                  onChange={e => setForm({ ...form, bio: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all resize-none" />
               </div>
             </>
           )}

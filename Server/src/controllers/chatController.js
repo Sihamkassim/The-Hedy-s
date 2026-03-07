@@ -4,24 +4,38 @@ const catchAsync = require('../utils/catchAsync');
 const prisma = new PrismaClient();
 
 exports.getChatContacts = catchAsync(async (req, res) => {
-  if (req.user.role === 'doctor') {
-    const therapist = await prisma.therapist.findUnique({
-      where: { email: req.user.email },
-      select: { id: true },
-    });
+  if (req.user.role === 'doctor' || req.user.role === 'spiritual_leader') {
+    let providerId;
+    if (req.user.role === 'doctor') {
+      const therapist = await prisma.therapist.findUnique({
+        where: { email: req.user.email },
+        select: { id: true },
+      });
+      providerId = therapist?.id;
+    } else {
+      const spiritualLeader = await prisma.spiritualLeader.findUnique({
+        where: { email: req.user.email },
+        select: { id: true },
+      });
+      providerId = spiritualLeader?.id;
+    }
 
-    if (!therapist) {
+    if (!providerId) {
       return res.status(200).json({
         status: 'success',
         data: { contacts: [] },
       });
     }
 
+    const whereClause = { status: { in: ['confirmed', 'completed'] } };
+    if (req.user.role === 'doctor') {
+      whereClause.therapistId = providerId;
+    } else {
+      whereClause.spiritualId = providerId;
+    }
+
     const appointments = await prisma.appointment.findMany({
-      where: { 
-        therapistId: therapist.id,
-        status: { in: ['confirmed', 'completed'] } // Show patients with confirmed or completed appointments
-      },
+      where: whereClause,
       select: {
         user: {
           select: { id: true, name: true, email: true, role: true },
@@ -51,25 +65,32 @@ exports.getChatContacts = catchAsync(async (req, res) => {
     },
     include: {
       therapist: true,
+      spiritualLeader: true,
     }
   });
 
-  const therapistEmails = appointments
-    .filter(app => app.therapist && app.therapist.email)
-    .map(app => app.therapist.email);
+  const providerEmails = [];
+  appointments.forEach(app => {
+    if (app.therapist && app.therapist.email) {
+      providerEmails.push(app.therapist.email);
+    }
+    if (app.spiritualLeader && app.spiritualLeader.email) {
+      providerEmails.push(app.spiritualLeader.email);
+    }
+  });
 
-  if (therapistEmails.length === 0) {
+  if (providerEmails.length === 0) {
     return res.status(200).json({
       status: 'success',
       data: { contacts: [] },
     });
   }
 
-  // Find the actual User accounts for these therapists (to get their User ID for chatting)
+  // Find the actual User accounts for these providers (to get their User ID for chatting)
   const contacts = await prisma.user.findMany({
     where: {
-      role: 'doctor',
-      email: { in: therapistEmails },
+      role: { in: ['doctor', 'spiritual_leader'] },
+      email: { in: providerEmails },
       NOT: { id: req.user.id },
     },
     select: { id: true, name: true, email: true, role: true },

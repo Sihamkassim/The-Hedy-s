@@ -107,15 +107,23 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="space-y-3">
-              {appointments.map((a, i) => (
+              {appointments.map((a, i) => {
+                const providerName = a.therapist?.name || a.spiritualLeader?.name || "Provider"
+                const providerSpec = a.therapist?.specialization || a.spiritualLeader?.specialization || ""
+                const providerType = a.spiritualLeader ? "Spiritual" : "Therapist"
+                
+                return (
                 <div key={a.id || i} className="bg-white rounded-2xl border p-5 flex items-center justify-between gap-4" style={{ borderColor: "#E8EDE0" }}>
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm" style={{ background: "linear-gradient(135deg, #4A5E3A, #8A9E6C)" }}>
-                      {(a.therapist?.name || "T").charAt(0)}
+                      {providerName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm" style={{ color: "#2C3E1E" }}>{a.therapist?.name || "Therapist"}</p>
-                      <p className="text-xs text-gray-400">{a.therapist?.specialization}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm" style={{ color: "#2C3E1E" }}>{providerName}</p>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: "#F7F4EF", color: "#6B7F5E" }}>{providerType}</span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">{providerSpec}</p>
                     </div>
                   </div>
                   <div className="text-right text-xs text-gray-500">
@@ -138,7 +146,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </div>

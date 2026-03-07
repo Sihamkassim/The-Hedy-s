@@ -13,14 +13,14 @@ function Navbar() {
 
   const getFirstLink = () => {
     if (!isAuthenticated) return { to: '/', label: 'Home', icon: Home }
-    if (user?.role === 'doctor') return { to: '/doctor', label: 'My Schedule', icon: Calendar }
+    if (user?.role === 'doctor' || user?.role === 'spiritual_leader') return { to: '/doctor', label: 'My Schedule', icon: Calendar }
     if (user?.role === 'admin') return { to: '/admin', label: 'Admin Panel', icon: ShieldCheck }
     return { to: '/dashboard', label: 'My Dashboard', icon: Calendar }
   }
 
   const navLinks = [
     getFirstLink(),
-    ...(user?.role === 'doctor' || user?.role === 'admin' ? [] : [
+    ...(user?.role === 'doctor' || user?.role === 'admin' || user?.role === 'spiritual_leader' ? [] : [
       { to: '/therapists', label: 'Therapists', icon: Users },
       { to: '/challenges', label: 'Challenges', icon: BookOpen },
       { to: '/free-help', label: 'Free Help', icon: Shield },

@@ -1,27 +1,39 @@
 ﻿import { useState, useEffect } from "react"
 import { Search, Star, Leaf, Filter } from "lucide-react"
 import { Link } from "react-router-dom"
-import { therapistAPI } from "../api/services"
+import { therapistAPI, spiritualLeaderAPI } from "../api/services"
 import { therapists as mockTherapists } from "../data/mockData"
 
 export default function TherapistsPage() {
-  const [therapists, setTherapists] = useState([])
+  const [providers, setProviders] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState("all")
+  const [providerType, setProviderType] = useState("all") // all, therapist, spiritual
 
   useEffect(() => {
-    therapistAPI.getAll()
-      .then(res => setTherapists(res.data.data.therapists))
-      .catch(() => setTherapists(mockTherapists))
+    Promise.all([
+      therapistAPI.getAll().catch(() => ({ data: { data: { therapists: mockTherapists } } })),
+      spiritualLeaderAPI.getAll().catch(() => ({ data: { data: { leaders: [] } } }))
+    ])
+      .then(([therapistRes, spiritualRes]) => {
+        const therapists = therapistRes.data.data.therapists || []
+        const mappedTherapists = therapists.map(t => ({ ...t, type: 'therapist' }))
+        
+        const leaders = spiritualRes.data.data.spiritualLeaders || []
+        const mappedLeaders = leaders.map(l => ({ ...l, type: 'spiritual', name: l.user?.name || l.name || 'Spiritual Leader' }))
+        
+        setProviders([...mappedTherapists, ...mappedLeaders])
+      })
       .finally(() => setLoading(false))
   }, [])
 
-  const displayList = (therapists.length > 0 ? therapists : mockTherapists).filter(t => {
+  const displayList = providers.filter(t => {
     const q = search.toLowerCase()
-    const matchSearch = !q || t.name?.toLowerCase().includes(q) || t.specialization?.toLowerCase().includes(q)
+    const matchSearch = !q || t.name?.toLowerCase().includes(q) || t.specialization?.toLowerCase().includes(q) || t.religion?.toLowerCase().includes(q)
     const matchFilter = filter === "all" ? true : filter === "free" ? (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) : !(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0)
-    return matchSearch && matchFilter
+    const matchType = providerType === "all" ? true : providerType === "therapist" ? t.type === "therapist" : t.type === "spiritual"
+    return matchSearch && matchFilter && matchType
   })
 
   return (
@@ -35,6 +47,22 @@ export default function TherapistsPage() {
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 -mt-6">
+        {/* Type Toggle */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-white p-1 rounded-2xl shadow-sm inline-flex" style={{ border: "1px solid #E8EDE0" }}>
+            {["all", "therapist", "spiritual"].map(type => (
+              <button
+                key={type}
+                onClick={() => setProviderType(type)}
+                className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${providerType === type ? 'text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ background: providerType === type ? "linear-gradient(135deg, #4A5E3A, #6B7F5E)" : "transparent" }}
+              >
+                {type === "all" ? "All Providers" : type === "therapist" ? "Mental Health Doctors" : "Spiritual Assistance"}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-lg p-5 flex flex-col md:flex-row gap-4" style={{ border: "1px solid #E8EDE0" }}>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -73,7 +101,7 @@ export default function TherapistsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-base truncate" style={{ color: "#2C3E1E" }}>{t.name}</h3>
-                      <p className="text-xs text-gray-500 mt-0.5 truncate">{t.specialization}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 truncate">{t.specialization || (t.type === 'spiritual' ? `Spiritual Guide (${t.religion})` : 'Therapist')}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                         <span className="text-xs font-semibold text-gray-600">{t.rating || "5.0"}</span>
@@ -81,10 +109,10 @@ export default function TherapistsPage() {
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                       style={{ background: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "#E8EDE0" : "#FEF3C7", color: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "#4A5E3A" : "#78350F" }}>
-                      {(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "Free" : `$${t.sessionPrice || t.priceAmount}`}
+                      {(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "Free" : `$${t.sessionPrice || t.priceAmount || t.pricePerSession || t.sessionPrice || "Paid"}`}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">{t.bio}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">{t.bio || `Providing spiritual guidance and support.`}</p>
                   {t.availability && (
                     <div className="flex flex-wrap gap-1 mb-4">
                       {(Array.isArray(t.availability) ? t.availability.slice(0, 2) : []).map((a, j) => (
@@ -92,7 +120,7 @@ export default function TherapistsPage() {
                       ))}
                     </div>
                   )}
-                  <Link to={`/booking/${t.id}`}
+                  <Link to={`/booking/${t.id}?type=${t.type}`}
                     className="block w-full py-2.5 rounded-xl font-semibold text-sm text-center text-white transition-all hover:shadow-md"
                     style={{ background: "linear-gradient(135deg, #4A5E3A, #6B7F5E)" }}>
                     Book Session

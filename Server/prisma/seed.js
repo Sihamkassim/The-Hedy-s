@@ -8,13 +8,16 @@ async function main() {
 
   // Clear existing data
   console.log('Clearing existing data...');
-  await prisma.challengeProgress.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.appointment.deleteMany();
-  await prisma.challenge.deleteMany();
-  await prisma.supportResource.deleteMany();
-  await prisma.therapist.deleteMany();
-  await prisma.user.deleteMany();
+  await Promise.all([
+    prisma.challengeProgress.deleteMany(),
+    prisma.message.deleteMany(),
+    prisma.appointment.deleteMany(),
+    prisma.challenge.deleteMany(),
+    prisma.supportResource.deleteMany(),
+    prisma.therapist.deleteMany(),
+    prisma.spiritualLeader.deleteMany(),
+    prisma.user.deleteMany()
+  ]);
 
   // Create Users
   console.log('Creating users...');
@@ -23,16 +26,16 @@ async function main() {
   const users = await Promise.all([
     prisma.user.create({
       data: {
-        name: 'Sarah Johnson',
-        email: 'sarah@example.com',
+        name: 'Selamawit Tadesse',
+        email: 'selam@example.com',
         password: hashedPassword,
         role: 'patient',
       },
     }),
     prisma.user.create({
       data: {
-        name: 'Emily Davis',
-        email: 'emily@example.com',
+        name: 'Hiwot Kebede',
+        email: 'hiwot@example.com',
         password: hashedPassword,
         role: 'patient',
       },
@@ -54,25 +57,25 @@ async function main() {
   const therapists = await Promise.all([
     prisma.therapist.create({
       data: {
-        name: 'Dr. Sarah Mitchell',
-        email: 'sarah.mitchell@herspace.com',
+        name: 'Dr. Tigist Assefa',
+        email: 'tigist.assefa@herspace.com',
         specialization: 'Anxiety & Depression',
         experience: 12,
         rating: 4.9,
-        sessionPrice: 150,
+        sessionPrice: 1500,
         isFreeSupport: false,
         availability: ['Mon 9-5', 'Wed 9-5', 'Fri 9-3'],
-        bio: 'Experienced therapist specializing in cognitive behavioral therapy for anxiety and depression. Passionate about helping women navigate life transitions.',
+        bio: 'Experienced therapist specializing in cognitive behavioral therapy for anxiety and depression. Passionate about helping Ethiopian women navigate life transitions.',
       },
     }),
     prisma.therapist.create({
       data: {
-        name: 'Dr. Maya Patel',
-        email: 'maya.patel@herspace.com',
+        name: 'Dr. Dawit Mekonnen',
+        email: 'dawit.mekonnen@herspace.com',
         specialization: 'Trauma & PTSD',
         experience: 15,
         rating: 4.8,
-        sessionPrice: 175,
+        sessionPrice: 1750,
         isFreeSupport: false,
         availability: ['Tue 10-6', 'Thu 10-6', 'Sat 10-2'],
         bio: 'Specialized in trauma-focused therapy with extensive experience in EMDR and somatic approaches. Dedicated to creating safe healing spaces.',
@@ -80,34 +83,21 @@ async function main() {
     }),
     prisma.therapist.create({
       data: {
-        name: 'Dr. Jennifer Lee',
-        email: 'jennifer.lee@herspace.com',
+        name: 'Dr. Bethlehem Alemu',
+        email: 'bethlehem.alemu@herspace.com',
         specialization: 'Relationship & Family',
         experience: 10,
         rating: 4.7,
-        sessionPrice: 140,
+        sessionPrice: 1400,
         isFreeSupport: false,
         availability: ['Mon 2-8', 'Wed 2-8', 'Thu 2-8'],
-        bio: 'Expert in couples therapy and family dynamics. Helping individuals and families build stronger, healthier relationships.',
+        bio: 'Expert in couples therapy and Ethiopian family dynamics. Helping individuals and families build stronger, healthier relationships.',
       },
     }),
     prisma.therapist.create({
       data: {
-        name: 'Dr. Amanda Rodriguez',
-        email: 'amanda.rodriguez@herspace.com',
-        specialization: 'Life Coaching & Wellness',
-        experience: 8,
-        rating: 4.6,
-        sessionPrice: 120,
-        isFreeSupport: false,
-        availability: ['Tue 9-5', 'Fri 9-5'],
-        bio: 'Holistic approach combining therapy with wellness practices. Specializing in self-esteem, career transitions, and personal growth.',
-      },
-    }),
-    prisma.therapist.create({
-      data: {
-        name: 'Dr. Rachel Thompson',
-        email: 'rachel.thompson@herspace.com',
+        name: 'Dr. Kalkidan Bekele',
+        email: 'kalkidan.bekele@herspace.com',
         specialization: 'Free Support Counselor',
         experience: 6,
         rating: 4.5,
@@ -120,6 +110,52 @@ async function main() {
   ]);
 
   console.log(`✓ Created ${therapists.length} therapists`);
+
+  // Create Spiritual Leaders
+  console.log('Creating spiritual leaders...');
+  const spiritualLeaders = await Promise.all([
+    prisma.spiritualLeader.create({
+      data: {
+        name: 'Aba Yohannes',
+        email: 'aba.yohannes@herspace.com',
+        religion: 'Orthodox Christianity',
+        specialization: 'Spiritual Counseling & Guidance',
+        experience: 20,
+        rating: 4.9,
+        sessionPrice: 500,
+        availability: ['Mon 8-12', 'Wed 8-12', 'Sat 8-12'],
+        bio: 'Dedicated Ethiopian Orthodox priest offering spiritual guidance, prayer sessions, and counseling for achieving inner peace and clarity.',
+      },
+    }),
+    prisma.spiritualLeader.create({
+      data: {
+        name: 'Ustaz Mohammed',
+        email: 'ustaz.mohammed@herspace.com',
+        religion: 'Islam',
+        specialization: 'Family & Marriage Counseling',
+        experience: 15,
+        rating: 4.8,
+        sessionPrice: 400,
+        availability: ['Tue 10-2', 'Thu 10-2', 'Fri 2-5'],
+        bio: 'Respected Islamic scholar focused on guiding families and individuals through life’s challenges using Islamic teachings and wisdom.',
+      },
+    }),
+    prisma.spiritualLeader.create({
+      data: {
+        name: 'Pastor Daniel',
+        email: 'pastor.daniel@herspace.com',
+        religion: 'Protestantism',
+        specialization: 'Youth & Empowerment',
+        experience: 12,
+        rating: 4.7,
+        sessionPrice: 300,
+        availability: ['Mon 2-6', 'Thu 2-6', 'Sun 2-6'],
+        bio: 'Passionate Protestant pastor specializing in youth empowerment, relationship building, and offering spiritual counseling to navigate modern challenges.',
+      },
+    }),
+  ]);
+
+  console.log(`✓ Created ${spiritualLeaders.length} spiritual leaders`);
 
   // Create Challenges
   console.log('Creating wellness challenges...');
@@ -165,51 +201,30 @@ async function main() {
   const resources = await Promise.all([
     prisma.supportResource.create({
       data: {
-        name: 'National Suicide Prevention Lifeline',
-        phone: '988',
+        name: 'Ethiopian Toll-Free Crisis Line',
+        phone: '8149',
         category: 'Crisis',
       },
     }),
     prisma.supportResource.create({
       data: {
-        name: 'Crisis Text Line',
-        phone: 'Text HOME to 741741',
-        category: 'Crisis',
-      },
-    }),
-    prisma.supportResource.create({
-      data: {
-        name: 'RAINN (Rape, Abuse & Incest National Network)',
-        phone: '1-800-656-4673',
-        category: 'Sexual Assault',
-      },
-    }),
-    prisma.supportResource.create({
-      data: {
-        name: 'National Domestic Violence Hotline',
-        phone: '1-800-799-7233',
+        name: 'Sefere Selam Help Center',
+        phone: '+251 11 123 4567',
         category: 'Domestic Violence',
       },
     }),
     prisma.supportResource.create({
       data: {
-        name: 'SAMHSA National Helpline',
-        phone: '1-800-662-4357',
-        category: 'Substance Abuse',
+        name: 'Fikir Women\'s Support Network',
+        phone: '+251 911 00 00 00',
+        category: 'Women Empowerment',
       },
     }),
     prisma.supportResource.create({
       data: {
-        name: 'National Eating Disorders Association',
-        phone: '1-800-931-2237',
-        category: 'Eating Disorders',
-      },
-    }),
-    prisma.supportResource.create({
-      data: {
-        name: 'Postpartum Support International',
-        phone: '1-800-944-4773',
-        category: 'Maternal Mental Health',
+        name: 'Addis Healing Center',
+        phone: '+251 11 555 1234',
+        category: 'Mental Health Counseling',
       },
     }),
   ]);
@@ -231,7 +246,7 @@ async function main() {
     prisma.appointment.create({
       data: {
         userId: users[1].id,
-        therapistId: therapists[1].id,
+        spiritualId: spiritualLeaders[0].id,
         date: new Date('2026-03-18'),
         time: '2:00 PM',
         status: 'pending',
@@ -276,6 +291,7 @@ async function main() {
   console.log('\n📊 Summary:');
   console.log(`   - ${users.length} users`);
   console.log(`   - ${therapists.length} therapists`);
+  console.log(`   - ${spiritualLeaders.length} spiritual leaders`);
   console.log(`   - ${challenges.length} challenges`);
   console.log(`   - ${resources.length} support resources`);
   console.log(`   - ${appointments.length} appointments`);
