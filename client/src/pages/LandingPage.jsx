@@ -68,6 +68,32 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Blog Articles */}
+      <section className="py-20 px-4 border-t" style={{ background: "var(--base-bg)", borderColor: "rgba(0,0,0,0.05)" }}>
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center" style={{ color: "var(--primary)" }}>
+            {t("blogs.sectionTitle") || "Latest Articles"}
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col p-6 rounded-3xl border border-accent/20 shadow-sm hover:shadow-xl transition-all duration-300 bg-base-bg transform hover:-translate-y-1">
+                <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "var(--base-text)" }}>
+                  {t(`blogs.items.${i}.title`)}
+                </h3>
+                <p className="text-sm flex-grow mb-6 leading-relaxed opacity-80" style={{ color: "var(--base-text)" }}>
+                  {t(`blogs.items.${i}.summary`)}
+                </p>
+                <div className="mt-auto">
+                  <button className="inline-flex items-center gap-2 font-semibold text-sm group" style={{ color: "var(--accent)" }}>
+                    {t("blogs.readMore") || "Read more"} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Stats */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">

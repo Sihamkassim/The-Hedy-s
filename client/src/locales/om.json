@@ -30,5 +30,27 @@
     "heroDesc2": "Yaalli yeroo gabaabaa ykn dheeraa ta'uu danda'a  ariitii keetiin waliin guddanna.",
     "meetProvider": "Ogeessa Quunnami",
     "freeResources": "Qabeenya Bilisaa"
+  },
+  "blogs": {
+    "sectionTitle": "Barreeffamoota Haaraa",
+    "readMore": "Dabalata dubbisi",
+    "items": [
+      {
+        "title": "Dhiphina Ulfa Boodaa (Postpartum)",
+        "summary": "Dhiibbaan aadaa haadhotiin haaraa gammachuu qofa qabaachuu qabu jedhu jira. Garuu haadhotiin hedduun dhiphina ulfa boodaatiin ni rakkatu."
+      },
+      {
+        "title": "Gaaela fi Fayyaa Sammuu",
+        "summary": "Itoophiyaa keessatti gaaelli hedduun kan qophaauudha. Buloogiin kun dhiibbaa sammuu fi dhiphina gaaela keessatti mudatu akkamitti dandamachuu akka dandaan ibsa."
+      },
+      {
+        "title": "Inni Biyya Alaa Deeme",
+        "summary": "Dubartootni baayeen yeroo abbootiin manaa isaanii gara biyya alaa deeman kophaa hafu. Barreeffamni kun kophaattummaa mudatu ibsa."
+      },
+      {
+        "title": "Baaa Callisaa: Haleellaa Saalaa",
+        "summary": "Dubartootni haleellaan saalaa irra gahe yeroo baayee qaanii irraa ni callisu. Buloogiin kun akkamitti akka fayyan ibsa."
+      }
+    ]
   }
 }

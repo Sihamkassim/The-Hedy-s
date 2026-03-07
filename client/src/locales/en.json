@@ -30,5 +30,27 @@
     "heroDesc2": "Therapy can be short-term or long-term  we grow with you at your pace.",
     "meetProvider": "Meet a Provider",
     "freeResources": "Free Resources"
+  },
+  "blogs": {
+    "sectionTitle": "Latest Articles",
+    "readMore": "Read more",
+    "items": [
+      {
+        "title": "Postpartum Depression: The Unseen Struggle",
+        "summary": "There is cultural pressure that a new mother should only be happy. But many mothers suffer from postpartum depression. This article explains symptoms, solutions, and when to seek help."
+      },
+      {
+        "title": "Marriage and Mental Health: Self-Care",
+        "summary": "In Ethiopia, many marriages are arranged. For women, this means living with a stranger. This blog explains how to cope with mental pressures, depression, and anxiety in arranged marriages."
+      },
+      {
+        "title": "He Went Abroad: Wives Left Behind",
+        "summary": "Thousands of Ethiopian women are left alone when their husbands move to find work abroad. This article explores the loneliness, anxiety, and family pressure faced by the waiting wives."
+      },
+      {
+        "title": "The Burden of Silence: Healing",
+        "summary": "In Ethiopia, women who have suffered sexual assault often stay silent out of fear and shame. This blog explains trauma, how to heal, and how to get help anonymously."
+      }
+    ]
   }
 }

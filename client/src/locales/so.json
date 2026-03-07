@@ -30,5 +30,27 @@
     "heroDesc2": "Daaweyntu waxay noqon kartaa waqti gaaban ama waqti dheer  adiga ayaan kugula koreynaa xawaarahaaga.",
     "meetProvider": "La Kulmo Daryeele",
     "freeResources": "Khayraadka Bilaashka H"
+  },
+  "blogs": {
+    "sectionTitle": "Maqaaladii Ugu Dambeeyay",
+    "readMore": "Sii akhri",
+    "items": [
+      {
+        "title": "Diiq-dhaqaaqa Dhalmada Kadib",
+        "summary": "Waxaa jira cadaadis dhaqameed oo ah in hooyada cusubi ay faraxsanaato. Laakiin badan ayaa qaba niyad-jab dhalmada kadib."
+      },
+      {
+        "title": "Guurka iyo Caafimaadka Dhimirka",
+        "summary": "Itoobiya gudaheeda, guurar badan ayaa la qabanqaabiyaa. Balooggan wuxuu sharxayaa sida looga gudbo cadaadiska dhimirka."
+      },
+      {
+        "title": "Wuxuu Aaday Dibadda",
+        "summary": "Dumarka qaar ayaa keligood hara marka nimankoodu u guuraan dibadda. Maqaalkani wuxuu sahaminayaa kelinimada."
+      },
+      {
+        "title": "Culayska Aamusnaanta",
+        "summary": "Dumarka la kulmay xadgudub galmo badanaa way aamusaan. Balooggan wuxuu sharxayaa bogsashada."
+      }
+    ]
   }
 }
