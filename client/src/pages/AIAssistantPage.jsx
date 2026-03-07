@@ -4,6 +4,7 @@ import { aiAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import AuthModal from '../components/AuthModal'
+import ReactMarkdown from 'react-markdown'
 
 export default function AIAssistantPage() {
   const { isAuthenticated } = useAuth()
@@ -93,14 +94,25 @@ export default function AIAssistantPage() {
                   </div>
                 )}
                 <div
-                  className="max-w-md px-5 py-3 rounded-2xl text-sm leading-relaxed"
+                  className="max-w-md px-5 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap"
                   style={
                     m.role === 'user'
                       ? { background: '#4A5E3A', color: '#fff', borderBottomRightRadius: 4 }
                       : { background: '#E8EDE0', color: '#2C3E1E', borderBottomLeftRadius: 4 }
                   }
                 >
-                  {m.text}
+                  <ReactMarkdown
+                    components={{
+                      p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                      ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                      li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                      strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+                      em: ({ node, ...props }) => <em className="italic" {...props} />,
+                    }}
+                  >
+                    {m.text}
+                  </ReactMarkdown>
                 </div>
               </div>
             ))}

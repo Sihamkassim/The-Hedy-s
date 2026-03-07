@@ -1,0 +1,1 @@
+require('dotenv').config(); const { getMentalHealthResponse } = require('./src/services/aiService'); getMentalHealthResponse('am unable to love my child why is that').then(console.log).catch(console.error);

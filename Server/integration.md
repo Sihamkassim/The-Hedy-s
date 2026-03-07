@@ -192,30 +192,69 @@ This document maps out all the available backend endpoints, their methods, requi
   }
   \`\`\`
 
-### Update Challenge (Admin)
-- **URL**: \`/challenges/:id\`
-- **Method**: \`PATCH\`
+---
+
+## 6. Support Resources (\`/support\`)
+
+### Get All Resources
+- **URL**: \`/support\`- **Method**: `GET`
+- **Auth Required**: No
+
+### Create Resource (Admin Only)
+- **URL**: `/support`
+- **Method**: `POST`
 - **Auth Required**: Yes (Admin)
 - **Body**:
-  \`\`\`json
+  ```json
   {
-    "title": "Updated Title",
-    "description": "Updated description",
-    "duration": 21
+    "name": "Crisis Text Line",
+    "phone": "Text HOME to 741741",
+    "category": "Crisis"
   }
-  \`\`\`
+  ```
 
-### Delete Challenge (Admin)
-- **URL**: \`/challenges/:id\`
-- **Method**: \`DELETE\`
+### Delete Resource (Admin Only)
+- **URL**: `/support/:id`
+- **Method**: `DELETE`
 - **Auth Required**: Yes (Admin)
 
 ---
 
-## 6. Support Resources (`/support`)
+## 7. Admin Insights & Knowledge Base (`/admin`)
 
-### Get All Resources
-- **URL**: \`/support\`
+### Get Platform Statistics
+- **URL**: `/admin/stats`
+- **Method**: `GET`
+- **Auth Required**: Yes (Admin)
+
+### Get All Users
+- **URL**: `/admin/users`
+- **Method**: `GET`
+- **Auth Required**: Yes (Admin)
+- **Query Parameters**: `role`, `search`
+
+### Update User Role
+- **URL**: `/admin/users/:id/role`
+- **Method**: `PATCH`
+- **Auth Required**: Yes (Admin)
+- **Body**:
+  ```json
+  { "role": "doctor" }
+  ```
+
+### Delete User
+- **URL**: `/admin/users/:id`
+- **Method**: `DELETE`
+- **Auth Required**: Yes (Admin)
+
+### Upload RAG Document
+- **URL**: `/admin/documents`
+- **Method**: `POST`
+- **Auth Required**: Yes (Admin)
+- **Content-Type**: `multipart/form-data`
+- **Body**:
+  - `file`: The document file (.txt, .pdf, .docx, .ppt) to be parsed, chunked, embedded, and stored for the AI medical assistant.
+  - Returns document info alongside `chunksProcessed`.
 - **Method**: \`GET\`
 - **Auth Required**: No
 - **Query Parameter** (optional):
@@ -265,97 +304,3 @@ Connect to \`http://localhost:5000\` using \`socket.io-client\`
      console.log(data); // { senderId, receiverId, message, createdAt }
    });
    \`\`\`
-
----
-
-## 8. Admin Endpoints (`/admin`)
-
-> All routes require **Admin** role. Token must be sent as `Authorization: Bearer <token>`.
-
-### Get Platform Stats
-- **URL**: \`/admin/stats\`
-- **Method**: \`GET\`
-- **Auth Required**: Yes (Admin)
-- **Response**:
-  \`\`\`json
-  {
-    "stats": {
-      "users": { "total": 42, "patients": 38, "doctors": 4 },
-      "appointments": { "total": 120, "pending": 10, "confirmed": 30, "completed": 75, "cancelled": 5 },
-      "therapists": 10,
-      "challenges": { "total": 5, "totalJoins": 200 },
-      "resources": 8
-    }
-  }
-  \`\`\`
-
-### Get All Users
-- **URL**: \`/admin/users\`
-- **Method**: \`GET\`
-- **Auth Required**: Yes (Admin)
-- **Query Parameters** (optional):
-  - \`role=patient\` — filter by role (`patient`, `doctor`, `admin`)
-  - \`search=jane\` — search by name or email
-- **Response**: Array of users with `_count` of appointments and challengeProgress.
-
-### Update User Role
-- **URL**: \`/admin/users/:id/role\`
-- **Method**: \`PATCH\`
-- **Auth Required**: Yes (Admin)
-- **Body**:
-  \`\`\`json
-  {
-    "role": "doctor"
-  }
-  \`\`\`
-- **Notes**: Cannot change your own role.
-
-### Delete User
-- **URL**: \`/admin/users/:id\`
-- **Method**: \`DELETE\`
-- **Auth Required**: Yes (Admin)
-- **Notes**: Cannot delete your own account.
-
----
-
-## 9. Doctor Schedule (`/appointments`)
-
-### Get My Schedule (Doctor)
-- **URL**: \`/appointments/my-schedule\`
-- **Method**: \`GET\`
-- **Auth Required**: Yes (Doctor or Admin)
-- **Notes**: Links the logged-in user to their `Therapist` record by matching `User.email === Therapist.email`. Returns 404 if no therapist profile is linked to the doctor's email.
-- **Response**:
-  \`\`\`json
-  {
-    "therapist": { "id": "...", "name": "Dr. Jane", "email": "jane@herspace.com" },
-    "appointments": [
-      {
-        "id": "...",
-        "date": "2026-03-15",
-        "time": "10:00 AM",
-        "status": "confirmed",
-        "user": { "name": "Patient Name", "email": "patient@example.com" }
-      }
-    ]
-  }
-  \`\`\`
-
----
-
-## Role-Based Access Summary
-
-| Resource | Patient | Doctor | Admin |
-|---|---|---|---|
-| View therapists | ✅ | ✅ | ✅ |
-| Book appointment | ✅ | ✅ | ✅ |
-| View own appointments | ✅ | ✅ | ✅ |
-| Cancel own appointment | ✅ | ✅ | ✅ |
-| View own schedule (as therapist) | ❌ | ✅ | ✅ |
-| Update appointment status | ❌ | ✅ | ✅ |
-| View all appointments | ❌ | ✅ | ✅ |
-| Create/Update/Delete therapist | ❌ | ❌ | ✅ |
-| Create/Update/Delete challenge | ❌ | ❌ | ✅ |
-| Create/Delete resource | ❌ | ❌ | ✅ |
-| View platform stats | ❌ | ❌ | ✅ |
-| Manage users (view/role/delete) | ❌ | ❌ | ✅ |

@@ -2,7 +2,7 @@
 import {
   Users, Calendar, ShieldCheck, Trash2, CheckCircle, Loader,
   Plus, X, Phone, BookOpen, BarChart3, TrendingUp, UserCheck,
-  Edit3,
+  Edit3, Database, UploadCloud, FileText
 } from 'lucide-react'
 import { appointmentAPI, therapistAPI, supportAPI, challengeAPI, adminAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
@@ -15,6 +15,7 @@ const TABS = [
   { id: 'therapists',   label: 'Therapists',   icon: UserCheck,   adminOnly: true },
   { id: 'challenges',   label: 'Challenges',   icon: BookOpen,    adminOnly: true },
   { id: 'resources',    label: 'Resources',    icon: Phone,       adminOnly: true },
+  { id: 'knowledge',    label: 'AI Knowledge', icon: Database,    adminOnly: true },
 ]
 
 const STATUS_COLORS = {
@@ -79,6 +80,11 @@ export default function AdminPage() {
   const [resourceForm, setResourceForm] = useState({ name: '', phone: '', category: 'Crisis' })
   const [resourceError, setResourceError] = useState('')
   const [addingResource, setAddingResource] = useState(false)
+
+  // Knowledge Base (RAG)
+  const [documentFile, setDocumentFile] = useState(null)
+  const [uploadingDoc, setUploadingDoc] = useState(false)
+  const [uploadMessage, setUploadMessage] = useState({ type: '', text: '' })
 
   // Role guard
   useEffect(() => {
@@ -179,6 +185,35 @@ export default function AdminPage() {
     setDeletingId(id)
     try { await adminAPI.deleteUser(id); setUsers(prev => prev.filter(u => u.id !== id)) } catch {}
     setDeletingId(null)
+  }
+
+  const handleDocumentUpload = async (e) => {
+    e.preventDefault()
+    if (!documentFile) return
+
+    setUploadingDoc(true)
+    setUploadMessage({ type: '', text: '' })
+
+    const formData = new FormData()
+    formData.append('file', documentFile)
+
+    try {
+      const res = await adminAPI.uploadDocument(formData)
+      setUploadMessage({ 
+        type: 'success', 
+        text: `Successfully processed ${res.data.data.document.filename} (${res.data.data.document.chunksProcessed} knowledge chunks embedded).` 
+      })
+      setDocumentFile(null)
+      // reset file input visually
+      e.target.reset()
+    } catch (err) {
+      console.error(err)
+      setUploadMessage({ 
+        type: 'error', 
+        text: err.response?.data?.message || 'Failed to upload document' 
+      })
+    }
+    setUploadingDoc(false)
   }
 
   if (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'doctor')) return null
@@ -601,6 +636,78 @@ export default function AdminPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* AI KNOWLEDGE BASE (RAG) */}
+            {tab === 'knowledge' && (
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold" style={{ color: '#2C3E1E' }}>AI Knowledge Base</h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Upload documents (PDF, DOCX, TXT, PPT) to enhance the AI Assistant's medical knowledge via Retrieval-Augmented Generation.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl border p-8 max-w-2xl" style={{ borderColor: '#E8EDE0' }}>
+                  <form onSubmit={handleDocumentUpload} className="space-y-6">
+                    
+                    <div className="border-2 border-dashed rounded-2xl p-8 text-center transition-colors hover:bg-gray-50"
+                      style={{ borderColor: documentFile ? '#6B7F5E' : '#E5E7EB' }}>
+                      <input 
+                        type="file" 
+                        id="rag-document" 
+                        className="hidden" 
+                        accept=".pdf, .docx, .doc, .txt, .ppt, .pptx"
+                        onChange={(e) => setDocumentFile(e.target.files[0])}
+                      />
+                      <label htmlFor="rag-document" className="cursor-pointer flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: '#F7F4EF' }}>
+                          <UploadCloud className="w-8 h-8" style={{ color: '#4A5E3A' }} />
+                        </div>
+                        <span className="font-semibold text-gray-700">
+                          {documentFile ? documentFile.name : 'Click to browse files'}
+                        </span>
+                        <span className="text-xs text-gray-400 mt-2">
+                          Supports PDF, DOCX, PPT, TXT (Max 5MB)
+                        </span>
+                      </label>
+                    </div>
+
+                    {uploadMessage.text && (
+                      <div className={`px-4 py-3 rounded-xl text-sm font-medium ${uploadMessage.type === 'success' ? 'bg-[#E8EDE0] text-[#4A5E3A]' : 'bg-red-50 text-red-600'}`}>
+                        {uploadMessage.text}
+                      </div>
+                    )}
+
+                    <div className="flex justify-end">
+                      <button 
+                        type="submit" 
+                        disabled={!documentFile || uploadingDoc}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
+                        style={{ background: '#4A5E3A' }}>
+                        {uploadingDoc ? (
+                          <><Loader className="w-5 h-5 animate-spin" /> Processing & Embedding...</>
+                        ) : (
+                          <><Database className="w-5 h-5" /> Embed to Knowledge Base</>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="mt-8 bg-[#F8FAF5] rounded-2xl p-6 border" style={{ borderColor: '#E8EDE0' }}>
+                  <div className="flex items-start gap-4">
+                    <FileText className="w-6 h-6 mt-1" style={{ color: '#6B7F5E' }} />
+                    <div>
+                      <h4 className="font-semibold" style={{ color: '#2C3E1E' }}>How it works</h4>
+                      <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                        When you upload a document here, our system automatically parses the text from the file, splits it into semantically meaningful chunks, and vectorizes these chunks using Voyage AI embeddings.
+                        Finally, they are stored securely in the PostgreSQL vector database. The <span className="font-semibold">Gemini 2.5 Flash</span> medical AI will automatically query this database to fetch relevant psychiatric context before responding to users!
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </>

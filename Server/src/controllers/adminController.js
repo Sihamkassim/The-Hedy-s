@@ -2,6 +2,9 @@ const catchAsync = require('../utils/catchAsync');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const { getVoyageEmbedding } = require('../services/embeddingService');
+const { parseFileToText, chunkText } = require('../services/documentParser');
+
 // GET /admin/stats — dashboard overview counts
 exports.getStats = catchAsync(async (req, res) => {
   const [
@@ -136,4 +139,64 @@ exports.deleteUser = catchAsync(async (req, res) => {
   await prisma.user.delete({ where: { id } });
 
   res.status(204).json({ status: 'success', data: null });
+});
+
+// POST /admin/documents — Upload Reference RAG Document
+exports.uploadDocument = catchAsync(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ status: 'error', message: 'Please upload a file' });
+  }
+
+  const file = req.file;
+
+  try {
+    // 1. Parse File
+    let text = await parseFileToText(file.path, file.mimetype);
+    if (typeof text !== 'string') text = String(text);
+    
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({ status: 'error', message: 'Could not extract text from document.' });
+    }
+
+    // 2. Chunk text
+    const chunks = chunkText(text, 1000); // chunk to ~1000 characters/words
+
+    // 3. Create document record
+    const document = await prisma.document.create({
+      data: {
+        filename: file.originalname,
+        type: file.mimetype,
+      }
+    });
+
+    // 4. Create and Insert Chunk Embeddings via parameterized raw queries
+    let embeddedChunksCount = 0;
+    for (const chunk of chunks) {
+      if (chunk.trim().length < 10) continue; // skip very tiny chunks
+
+      // Use Voyage AI to embed chunk
+      const embedding = await getVoyageEmbedding(chunk);
+
+      // Insert using vector type (format: '[0.1, 0.2, ...]')
+      await prisma.$executeRaw`
+        INSERT INTO "DocumentChunk" (id, "content", "documentId", "embedding") 
+        VALUES (gen_random_uuid(), ${chunk}, ${document.id}, ${JSON.stringify(embedding)}::vector)
+      `;
+      embeddedChunksCount++;
+    }
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        document: {
+          id: document.id,
+          filename: document.filename,
+          chunksProcessed: embeddedChunksCount
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Error processing document upload:', err);
+    res.status(500).json({ status: 'error', message: 'Error processing document', detail: err.message });
+  }
 });

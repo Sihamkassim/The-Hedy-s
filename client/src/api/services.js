@@ -74,4 +74,7 @@ export const adminAPI = {
   getAllUsers: (params) => api.get('/admin/users', { params }),
   updateUserRole: (id, role) => api.patch(`/admin/users/${id}/role`, { role }),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  uploadDocument: (data) => api.post('/admin/documents', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
 }

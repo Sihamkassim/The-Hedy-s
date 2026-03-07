@@ -11,7 +11,7 @@ function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <Leaf className="w-7 h-7" style={{ color: '#A3C17A' }} />
-              <span className="text-2xl font-bold text-white tracking-tight">HerSpace</span>
+              <span className="text-2xl font-bold text-white tracking-tight">Tsinat</span>
             </div>
             <p className="text-sm mb-6 max-w-sm leading-relaxed" style={{ color: '#8A9E6C' }}>
               A nurturing space for women's mental health and personal growth.

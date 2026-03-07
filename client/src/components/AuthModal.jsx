@@ -109,7 +109,7 @@ export default function AuthModal({ onClose }) {
           </button>
           <div className="flex items-center gap-3 mb-1">
             <Leaf className="w-7 h-7 text-white" />
-            <span className="text-white font-bold text-xl">HerSpace</span>
+            <span className="text-white font-bold text-xl">Tsinat</span>
           </div>
           <p className="text-white/80 text-sm">
             {mode === 'login' ? 'Welcome back. Your safe space awaits.' : 'Begin your healing journey today.'}
