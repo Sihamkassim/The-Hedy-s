@@ -135,5 +135,13 @@ exports.getMe = catchAsync(async (req, res, next) => {
     where: { id: req.user.id },
     select: { id: true, name: true, email: true, role: true }
   });
-  res.status(200).json({ status: 'success', data: { user } });
+
+  let therapistProfile = null;
+  if (user.role === 'doctor') {
+    therapistProfile = await prisma.therapist.findUnique({
+      where: { email: user.email }
+    });
+  }
+
+  res.status(200).json({ status: 'success', data: { user, therapistProfile } });
 });

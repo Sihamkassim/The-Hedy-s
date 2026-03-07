@@ -17,6 +17,8 @@ router.get('/stats', adminController.getStats);
 router.get('/users', adminController.getAllUsers);
 router.patch('/users/:id/role', adminController.updateUserRole);
 router.delete('/users/:id', adminController.deleteUser);
+router.get('/therapists', adminController.getTherapists);
+router.patch('/therapists/:id/status', adminController.updateTherapistStatus);
 
 // RAG Documents Management
 router.post('/documents', upload.single('file'), adminController.uploadDocument);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, CheckCircle, XCircle, Loader, Leaf, User, Stethoscope, AlertCircle, Plus, X, Trash2, BookOpen } from 'lucide-react'
-import { doctorAPI, challengeAPI } from '../api/services'
+import { doctorAPI, challengeAPI, therapistAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -35,6 +35,10 @@ export default function DoctorDashboard() {
   const [challengeForm, setChallengeForm] = useState({ title: '', description: '', duration: '', isRepetitive: true, dailyTasks: [] })
   const [challengeError, setChallengeError] = useState('')
   const [addingChallenge, setAddingChallenge] = useState(false)
+  const [showTerms, setShowTerms] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [termsSubmitting, setTermsSubmitting] = useState(false)
+  const [termsError, setTermsError] = useState('')
 
   // Role guard
   useEffect(() => {
@@ -50,7 +54,11 @@ export default function DoctorDashboard() {
     ])
       .then(([docRes, chalRes]) => {
         setAppointments(docRes.data.data?.appointments || [])
-        setTherapist(docRes.data.data?.therapist || null)
+        const tProfile = docRes.data.data?.therapist
+        setTherapist(tProfile || null)
+        if (tProfile && tProfile.status === 'approved' && !tProfile.termsAccepted) {
+          setShowTerms(true)
+        }
         setChallenges(chalRes.data.data?.challenges || chalRes.data.data || [])
       })
       .catch(err => {
@@ -58,6 +66,21 @@ export default function DoctorDashboard() {
       })
       .finally(() => setLoading(false))
   }, [user])
+
+  const handleAcceptTerms = async () => {
+    if (!termsAccepted || termsSubmitting) return
+    setTermsError('')
+    setTermsSubmitting(true)
+    try {
+      await therapistAPI.acceptTerms()
+      setShowTerms(false)
+      setTherapist(prev => (prev ? { ...prev, termsAccepted: true } : prev))
+    } catch (err) {
+      setTermsError(err.response?.data?.message || 'Failed to accept terms. Please try again.')
+    } finally {
+      setTermsSubmitting(false)
+    }
+  }
 
   const handleAddChallenge = async (e) => {
     e.preventDefault(); setAddingChallenge(true); setChallengeError('')
@@ -118,8 +141,63 @@ export default function DoctorDashboard() {
 
   if (!isAuthenticated || (user?.role !== 'doctor' && user?.role !== 'admin')) return null
 
+  if (therapist?.status === 'pending') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F4EF]">
+        <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-[#D4DBC8]">
+          <Clock className="w-16 h-16 mx-auto mb-4 text-[#D97706]" />
+          <h2 className="text-2xl font-bold text-[#2C3E1E] mb-2">Application Pending</h2>
+          <p className="text-gray-600 mb-6">
+            Your application to join HerSpace as a therapist is currently under review by our admin team.
+            We will notify you once your credentials have been verified.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (therapist?.status === 'rejected') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F4EF]">
+        <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-red-200">
+          <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
+          <h2 className="text-2xl font-bold text-[#2C3E1E] mb-2">Application Rejected</h2>
+          <p className="text-gray-600 mb-6">
+            Unfortunately, your application to join HerSpace was not approved at this time. Please contact support for more detailed feedback regarding your documentation.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen" style={{ background: '#F7F4EF' }}>
+    <div className="min-h-screen relative" style={{ background: '#F7F4EF' }}>
+      {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-[#2C3E1E] mb-4">Therapist Terms & Conditions</h2>
+            <div className="text-sm text-gray-600 space-y-4 mb-6 p-4 bg-[#F7F4EF] rounded-xl border border-[#D4DBC8]">
+              <p><strong>1. Professional Conduct:</strong> As a verified therapist on HerSpace, you agree to uphold the highest standard of professional ethics and confidentiality regarding patient data and conversations.</p>
+              <p><strong>2. Accuracy of Diagnosis:</strong> Any advice, diagnosis, or health information you provide must fall strictly within your certified areas of expertise.</p>
+              <p><strong>3. Emergency Protocols:</strong> If a user expresses intent for self-harm or harm to others, you are obligated to refer them strictly to emergency hotlines and follow standard psychiatric emergency procedures immediately.</p>
+              <p><strong>4. Verification Accuracy:</strong> By accepting you reaffirm that all documents uploaded during registration are authentic, unedited, and legally bind you to practice.</p>
+            </div>
+            <label className="flex items-start gap-3 mb-6 cursor-pointer">
+              <input type="checkbox" className="mt-1 w-4 h-4 text-[#4A5E3A] rounded border-gray-300 focus:ring-[#4A5E3A]" 
+                checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
+              <span className="text-sm font-medium text-gray-700">I have read and agree to strictly follow the mental health and platform guidelines stated above.</span>
+            </label>
+            {termsError && (
+              <p className="text-sm text-red-600 mb-4">{termsError}</p>
+            )}
+            <button onClick={handleAcceptTerms} disabled={!termsAccepted || termsSubmitting}
+              className={`w-full py-3 rounded-xl font-bold text-white transition-all ${termsAccepted ? 'bg-[#4A5E3A] hover:bg-[#2C3E1E]' : 'bg-gray-300 cursor-not-allowed'}`}>
+              {termsSubmitting ? 'Saving...' : 'Accept and Continue to Dashboard'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="py-12 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
         <div className="max-w-6xl mx-auto flex items-center gap-4">

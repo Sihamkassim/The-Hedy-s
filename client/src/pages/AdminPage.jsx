@@ -101,7 +101,7 @@ export default function AdminPage() {
       stats:        () => adminAPI.getStats().then(r => setStats(r.data.data?.stats)),
       users:        () => adminAPI.getAllUsers().then(r => setUsers(r.data.data?.users || [])),
       appointments: () => appointmentAPI.getAll().then(r => setAppointments(r.data.data?.appointments || r.data.data || [])),
-      therapists:   () => therapistAPI.getAll().then(r => setTherapists(r.data.data?.therapists || r.data.data || [])),
+      therapists:   () => adminAPI.getAllTherapists().then(r => setTherapists(r.data.data?.therapists || r.data.data || [])),
       challenges:   () => challengeAPI.getAll().then(r => setChallenges(r.data.data?.challenges || r.data.data || [])),
       resources:    () => supportAPI.getAll().then(r => setResources(r.data.data?.resources || r.data.data || [])),
     }
@@ -122,6 +122,15 @@ export default function AdminPage() {
     setDeletingId(id)
     try { await therapistAPI.delete(id); setTherapists(prev => prev.filter(t => (t.id || t._id) !== id)) } catch {}
     setDeletingId(null)
+  }
+
+  const handleTherapistStatus = async (id, status) => {
+    setUpdatingId(id)
+    try {
+      await adminAPI.updateTherapistStatus(id, status)
+      setTherapists(prev => prev.map(t => (t.id || t._id) === id ? { ...t, status } : t))
+    } catch {}
+    setUpdatingId(null)
   }
 
   const handleAddTherapist = async (e) => {
@@ -474,10 +483,25 @@ export default function AdminPage() {
                             {(t.sessionPrice === 0 || t.isFreeSupport) ? 'Free' : `$${t.sessionPrice}/session`}
                           </span>
                         </div>
-                        <button onClick={() => handleDeleteTherapist(t.id || t._id)} disabled={deletingId === (t.id || t._id)}
-                          className="p-2 rounded-xl text-red-400 hover:bg-red-50 transition-colors shrink-0">
-                          {deletingId === (t.id || t._id) ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                        </button>
+                        <div className="flex flex-col gap-2 shrink-0">
+                          {t.status === 'pending' && (
+                            <div className="flex gap-2">
+                              <button onClick={() => handleTherapistStatus(t.id || t._id, 'approved')} disabled={updatingId === (t.id || t._id)}
+                                className="px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 text-xs font-semibold">
+                                Approve
+                              </button>
+                              <button onClick={() => handleTherapistStatus(t.id || t._id, 'rejected')} disabled={updatingId === (t.id || t._id)}
+                                className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-xs font-semibold">
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                          <span className={`text-xs px-2 py-0.5 rounded-full inline-block text-center font-medium capitalize ${t.status === 'approved' ? 'bg-green-100 text-green-800' : t.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>{t.status}</span>
+                          <button onClick={() => handleDeleteTherapist(t.id || t._id)} disabled={deletingId === (t.id || t._id)}
+                            className="p-2 mt-auto self-end rounded-xl text-red-400 hover:bg-red-50 transition-colors">
+                            {deletingId === (t.id || t._id) ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

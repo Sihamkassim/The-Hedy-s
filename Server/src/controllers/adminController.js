@@ -141,6 +141,40 @@ exports.deleteUser = catchAsync(async (req, res) => {
   res.status(204).json({ status: 'success', data: null });
 });
 
+// GET /admin/therapists — list all therapists including pending ones
+exports.getTherapists = catchAsync(async (req, res) => {
+  const { status } = req.query;
+  const where = status ? { status } : {};
+
+  const therapists = await prisma.therapist.findMany({
+    where,
+    orderBy: { createdAt: 'desc' }
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: therapists.length,
+    data: { therapists }
+  });
+});
+
+// PATCH /admin/therapists/:id/status — approve or reject a therapist
+exports.updateTherapistStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!['pending', 'approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ status: 'error', message: 'Invalid status' });
+  }
+
+  const therapist = await prisma.therapist.update({
+    where: { id },
+    data: { status }
+  });
+
+  res.status(200).json({ status: 'success', data: { therapist } });
+});
+
 // POST /admin/documents — Upload Reference RAG Document
 exports.uploadDocument = catchAsync(async (req, res) => {
   if (!req.file) {

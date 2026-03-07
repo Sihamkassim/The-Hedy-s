@@ -12,6 +12,8 @@ router.get('/:id', therapistController.getTherapist);
 // Protected routes (require authentication)
 router.use(authMiddleware.protect);
 
+router.post('/accept-terms', therapistController.acceptTerms);
+
 // Admin only routes
 router.post(
   '/',

@@ -3,9 +3,6 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   timeout: 30000, // Increased to 30 seconds for AI RAG responses
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 
@@ -32,6 +29,16 @@ api.interceptors.request.use(
     const token = localStorage.getItem('herspace_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+
+    const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData
+    if (isFormData && config.headers) {
+      if (typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type')
+      } else {
+        delete config.headers['Content-Type']
+        delete config.headers['content-type']
+      }
     }
     return config
   },

@@ -2,11 +2,7 @@ import api from './axios'
 
 export const authAPI = {
   register: (data) => {
-    if (data instanceof FormData) {
-      return api.post('/auth/register', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-    }
+    // Let Axios automatically handle the boundary for FormData
     return api.post('/auth/register', data)
   },
   login: (data) => api.post('/auth/login', data),
@@ -16,6 +12,7 @@ export const authAPI = {
 export const therapistAPI = {
   getAll: (params) => api.get('/therapists', { params }),
   getOne: (id) => api.get(`/therapists/${id}`),
+  acceptTerms: () => api.post('/therapists/accept-terms'),
   // Admin only
   create: (data) => api.post('/therapists', data),
   update: (id, data) => api.patch(`/therapists/${id}`, data),
@@ -78,4 +75,6 @@ export const adminAPI = {
   uploadDocument: (data) => api.post('/admin/documents', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
+  getAllTherapists: (params) => api.get('/admin/therapists', { params }),
+  updateTherapistStatus: (id, status) => api.patch(`/admin/therapists/${id}/status`, { status })
 }

@@ -4,9 +4,16 @@ const prisma = new PrismaClient();
 
 // Get all therapists with optional filters
 exports.getAllTherapists = catchAsync(async (req, res) => {
-  const { specialization, isFreeSupport, minRating } = req.query;
+  const { specialization, isFreeSupport, minRating, status } = req.query;
 
   const where = {};
+  
+  if (status && req.user && req.user.role === 'admin') {
+    where.status = status;
+  } else {
+    // By default, only show approved therapists to users
+    where.status = 'approved';
+  }
   
   if (specialization) {
     where.specialization = {
@@ -69,6 +76,21 @@ exports.getTherapist = catchAsync(async (req, res) => {
     status: 'success',
     data: { therapist }
   });
+});
+
+exports.acceptTerms = catchAsync(async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  
+  if (user.role !== 'doctor') {
+    return res.status(403).json({ message: 'Only therapists can accept terms' });
+  }
+
+  const therapist = await prisma.therapist.update({
+    where: { email: user.email },
+    data: { termsAccepted: true }
+  });
+
+  res.status(200).json({ status: 'success', data: { therapist } });
 });
 
 // Create a new therapist (admin only)
