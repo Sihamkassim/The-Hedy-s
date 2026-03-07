@@ -1,255 +1,254 @@
-import { useState } from 'react';
-import { Target, TrendingUp, Award, Calendar as CalendarIcon } from 'lucide-react';
-import ChallengeCard from '../components/ChallengeCard';
-import { challenges } from '../data/mockData';
+import { useState, useEffect } from 'react'
+import { Leaf, TrendingUp, Award, Users, CheckCircle, Loader, Lock, ChevronRight, Sprout } from 'lucide-react'
+import { challengeAPI } from '../api/services'
+import { useAuth } from '../context/AuthContext'
+import AuthModal from '../components/AuthModal'
+
+const mockChallenges = [
+  { id: '1', title: '30-Day Mindfulness', description: 'Meditate for 10 minutes every day to build a calmer, more centered mind.', duration: 30, participants: 2840 },
+  { id: '2', title: 'Gratitude Journal', description: 'Write 3 things you are grateful for each morning to rewire towards positivity.', duration: 21, participants: 1920 },
+  { id: '3', title: 'Digital Detox', description: 'Reduce screen time by 1 hour daily to reconnect with yourself and nature.', duration: 14, participants: 1450 },
+  { id: '4', title: 'Body Positivity', description: 'Daily affirmations and gentle movement to build a loving relationship with your body.', duration: 30, participants: 3200 },
+]
+
+const ICONS = ['🌿', '🌸', '🍃', '🌱', '🌻', '🦋']
 
 function ChallengesPage() {
-  const [filter, setFilter] = useState('all'); // all, active, not-started
+  const { isAuthenticated } = useAuth()
+  const [challenges, setChallenges] = useState([])
+  const [myProgress, setMyProgress] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [joining, setJoining] = useState(null)
+  const [filter, setFilter] = useState('all')
+  const [showAuth, setShowAuth] = useState(false)
+  const [toast, setToast] = useState(null)
 
-  const filteredChallenges = challenges.filter(challenge => {
-    if (filter === 'all') return true;
-    if (filter === 'active') return challenge.daysCompleted > 0 && challenge.daysCompleted < challenge.totalDays;
-    if (filter === 'not-started') return challenge.daysCompleted === 0;
-    return true;
-  });
+  const showToast = (msg, type = 'success') => {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
-  // Sample challenge for detailed view
-  const [selectedChallenge, setSelectedChallenge] = useState(null);
+  useEffect(() => {
+    challengeAPI.getAll()
+      .then(r => setChallenges(r.data.data.challenges || r.data.data || []))
+      .catch(() => setChallenges(mockChallenges))
+      .finally(() => setLoading(false))
+  }, [])
 
-  if (selectedChallenge) {
-    const challenge = challenges.find(c => c.id === selectedChallenge);
-    
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <button
-            onClick={() => setSelectedChallenge(null)}
-            className="text-purple-600 hover:text-purple-700 mb-6 font-semibold"
-          >
-            ← Back to Challenges
-          </button>
+  useEffect(() => {
+    if (isAuthenticated) {
+      challengeAPI.getMyProgress()
+        .then(r => setMyProgress(r.data.data.progress || []))
+        .catch(() => {})
+    }
+  }, [isAuthenticated])
 
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Header */}
-            <div className={`bg-gradient-to-r ${
-              challenge.color === 'purple' ? 'from-purple-500 to-purple-600' :
-              challenge.color === 'pink' ? 'from-pink-500 to-pink-600' :
-              challenge.color === 'teal' ? 'from-teal-500 to-teal-600' :
-              'from-yellow-500 to-yellow-600'
-            } p-8 text-white`}>
-              <div className="text-6xl mb-4">{challenge.icon}</div>
-              <h1 className="text-4xl font-bold mb-3">{challenge.title}</h1>
-              <p className="text-xl text-white/90">{challenge.description}</p>
-            </div>
+  const joinedIds = myProgress.map(p => p.challengeId)
 
-            {/* Progress */}
-            <div className="p-8">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-2xl font-bold text-gray-800">Your Progress</h3>
-                  <span className="text-3xl font-bold text-purple-600">{challenge.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
-                  <div
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500"
-                    style={{ width: `${challenge.progress}%` }}
-                  />
-                </div>
-                <p className="text-gray-600">
-                  <span className="font-bold text-purple-600">{challenge.daysCompleted}</span> of {challenge.totalDays} days completed
-                </p>
-              </div>
+  const filteredChallenges = challenges.filter(c => {
+    if (filter === 'joined') return joinedIds.includes(c.id)
+    if (filter === 'new') return !joinedIds.includes(c.id)
+    return true
+  })
 
-              {/* Today's Tasks */}
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">Today's Tasks</h3>
-                <div className="space-y-3">
-                  {challenge.dailyTasks.map((task, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <input
-                        type="checkbox"
-                        className="mt-1 w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
-                      />
-                      <span className="flex-1 text-gray-700">{task}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-purple-50 p-4 rounded-lg text-center">
-                  <CalendarIcon className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-gray-800">{challenge.totalDays}</p>
-                  <p className="text-sm text-gray-600">Total Days</p>
-                </div>
-                <div className="bg-teal-50 p-4 rounded-lg text-center">
-                  <TrendingUp className="w-8 h-8 text-teal-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-gray-800">{challenge.daysCompleted}</p>
-                  <p className="text-sm text-gray-600">Days Completed</p>
-                </div>
-                <div className="bg-pink-50 p-4 rounded-lg text-center">
-                  <Award className="w-8 h-8 text-pink-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-gray-800">{challenge.participants.toLocaleString()}</p>
-                  <p className="text-sm text-gray-600">Participants</p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-4">
-                <button className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-purple-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
-                  Mark Today Complete
-                </button>
-                <button className="px-6 bg-gray-100 text-gray-700 py-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                  Share Progress
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const handleJoin = async (id) => {
+    if (!isAuthenticated) { setShowAuth(true); return }
+    setJoining(id)
+    try {
+      await challengeAPI.join(id)
+      const r = await challengeAPI.getMyProgress()
+      setMyProgress(r.data.data.progress || [])
+      showToast('Challenge joined! Your journey begins today 🌿')
+    } catch (e) {
+      showToast(e.response?.data?.message || 'Could not join challenge', 'error')
+    } finally {
+      setJoining(null)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-purple-100 rounded-full mb-6">
-            <Target className="w-12 h-12 text-purple-600" />
+    <div className="min-h-screen" style={{ background: '#F7F4EF' }}>
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white"
+          style={{ background: toast.type === 'error' ? '#EF4444' : '#4A5E3A' }}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Hero */}
+      <div className="py-16 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-6"
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#A3C17A' }}>
+            <Sprout className="w-4 h-4" /> Personal growth challenges
           </div>
-          <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            30-Day Personal Growth Challenges
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Transform your life,<br />
+            <span style={{ color: '#A3C17A' }}>one day at a time</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Transform your life one day at a time. Join our supportive community in building 
-            confidence, reducing anxiety, and developing self-love through structured daily practices.
+          <p className="text-white/70 text-lg max-w-2xl mx-auto">
+            Join structured wellness challenges designed to build habits that last. 
+            Track your progress, earn milestones, and grow alongside a supportive community.
           </p>
-        </div>
-
-        {/* Stats Banner */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-md text-center">
-            <div className="text-4xl font-bold text-purple-600 mb-2">
-              {challenges.reduce((sum, c) => sum + c.participants, 0).toLocaleString()}
-            </div>
-            <p className="text-gray-600 font-semibold">Active Participants</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-md text-center">
-            <div className="text-4xl font-bold text-teal-600 mb-2">
-              {challenges.length}
-            </div>
-            <p className="text-gray-600 font-semibold">Available Challenges</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-md text-center">
-            <div className="text-4xl font-bold text-pink-600 mb-2">
-              30
-            </div>
-            <p className="text-gray-600 font-semibold">Days to Transform</p>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                filter === 'all'
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All Challenges
-            </button>
-            <button
-              onClick={() => setFilter('active')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                filter === 'active'
-                  ? 'bg-teal-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              In Progress
-            </button>
-            <button
-              onClick={() => setFilter('not-started')}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                filter === 'not-started'
-                  ? 'bg-pink-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Not Started
-            </button>
-          </div>
-        </div>
-
-        {/* Challenges Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {filteredChallenges.map((challenge) => (
-            <div key={challenge.id} onClick={() => setSelectedChallenge(challenge.id)} className="cursor-pointer">
-              <ChallengeCard challenge={challenge} />
-            </div>
-          ))}
-        </div>
-
-        {/* Benefits Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Why Join Our Challenges?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Award className="w-6 h-6 text-purple-600" />
-                </div>
+          {/* Stats row */}
+          <div className="flex justify-center gap-8 mt-10">
+            {[
+              { label: 'Active Participants', value: challenges.reduce((s, c) => s + (c.participants || 0), 0).toLocaleString() || '9,000+' },
+              { label: 'Challenges', value: challenges.length || '4' },
+              { label: 'Days of Growth', value: '30' },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl font-bold text-white">{loading ? '—' : s.value}</div>
+                <div className="text-xs text-white/50 mt-1">{s.label}</div>
               </div>
-              <div>
-                <h3 className="font-bold text-gray-800 mb-2">Structured Growth</h3>
-                <p className="text-gray-600">Daily tasks designed by mental health experts to create lasting positive change.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-teal-600" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 mb-2">Track Progress</h3>
-                <p className="text-gray-600">Visual progress tracking to see how far you've come and stay motivated.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
-                  <CalendarIcon className="w-6 h-6 text-pink-600" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 mb-2">Daily Reminders</h3>
-                <p className="text-gray-600">Get gentle reminders to complete your daily tasks and stay on track.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Target className="w-6 h-6 text-yellow-600" />
-                </div>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 mb-2">Community Support</h3>
-                <p className="text-gray-600">Join thousands of women on the same journey, supporting each other.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Filter bar */}
+      <div className="sticky top-0 z-10 py-3 px-4 border-b" style={{ background: '#F7F4EF', borderColor: '#D4DBC8' }}>
+        <div className="max-w-6xl mx-auto flex items-center gap-3">
+          {['all', 'joined', 'new'].map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className="px-5 py-2 rounded-full text-sm font-semibold transition-all capitalize"
+              style={filter === f
+                ? { background: '#4A5E3A', color: '#fff' }
+                : { background: '#E8EDE0', color: '#4A5E3A' }}>
+              {f === 'all' ? 'All' : f === 'joined' ? 'My Challenges' : 'Discover'}
+            </button>
+          ))}
+          {!isAuthenticated && (
+            <button onClick={() => setShowAuth(true)}
+              className="ml-auto flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full"
+              style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
+              <Lock className="w-3 h-3" /> Sign in to track progress
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-6">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="rounded-2xl h-64 animate-pulse" style={{ background: '#E8EDE0' }} />
+            ))}
+          </div>
+        ) : filteredChallenges.length === 0 ? (
+          <div className="text-center py-20">
+            <Leaf className="w-12 h-12 mx-auto mb-4 opacity-20" style={{ color: '#4A5E3A' }} />
+            <p className="text-gray-400">
+              {filter === 'joined' ? "You haven't joined any challenges yet." : 'No challenges found.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {filteredChallenges.map((challenge, idx) => {
+              const progress = myProgress.find(p => p.challengeId === challenge.id)
+              const isJoined = !!progress
+              const pct = progress ? Math.round((progress.completedDays / (challenge.duration || 30)) * 100) : 0
+
+              return (
+                <div key={challenge.id}
+                  className="rounded-2xl overflow-hidden border transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                  style={{ background: '#fff', borderColor: '#E8EDE0' }}>
+
+                  {/* Card header */}
+                  <div className="p-6" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+                    <div className="text-4xl mb-3">{ICONS[idx % ICONS.length]}</div>
+                    <h3 className="text-xl font-bold text-white mb-1">{challenge.title}</h3>
+                    <p className="text-white/70 text-sm">{challenge.description}</p>
+                  </div>
+
+                  <div className="p-6">
+                    {/* Meta */}
+                    <div className="flex items-center justify-between mb-4 text-xs text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" />
+                        {(challenge.participants || 0).toLocaleString()} joined
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        {challenge.duration} days
+                      </span>
+                    </div>
+
+                    {/* Progress bar (if joined) */}
+                    {isJoined && (
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span style={{ color: '#4A5E3A' }} className="font-semibold">
+                            Day {progress.completedDays} of {challenge.duration}
+                          </span>
+                          <span style={{ color: '#6B7F5E' }} className="font-bold">{pct}%</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full" style={{ background: '#E8EDE0' }}>
+                          <div className="h-2 rounded-full transition-all"
+                            style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #4A5E3A, #8A9E6C)' }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action */}
+                    <div className="flex items-center gap-3">
+                      {isJoined ? (
+                        <span className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full"
+                          style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
+                          <CheckCircle className="w-3.5 h-3.5" /> Enrolled
+                        </span>
+                      ) : (
+                        <button onClick={() => handleJoin(challenge.id)}
+                          disabled={joining === challenge.id}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-60"
+                          style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+                          {joining === challenge.id
+                            ? <><Loader className="w-4 h-4 animate-spin" /> Joining...</>
+                            : <><Sprout className="w-4 h-4" /> Join Challenge</>}
+                        </button>
+                      )}
+                      <span className="ml-auto flex items-center gap-1 text-xs" style={{ color: '#8A9E6C' }}>
+                        <Award className="w-3.5 h-3.5" /> {challenge.duration}-day program
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Why section */}
+        <div className="mt-16 rounded-3xl p-10 text-center" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+          <h2 className="text-2xl font-bold text-white mb-2">Why join a wellness challenge?</h2>
+          <p className="text-white/60 text-sm mb-8 max-w-xl mx-auto">
+            Science-backed daily micro-habits compound into transformational change over time.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { icon: TrendingUp, title: 'Track Progress', desc: 'Visual milestones keep you motivated every step of the way.' },
+              { icon: Users, title: 'Community', desc: 'Thousands of women on the same journey, cheering you forward.' },
+              { icon: Award, title: 'Earn Milestones', desc: 'Celebrate wins — big and small — as you grow each day.' },
+            ].map(({ icon: Icon, title, desc }, i) => (
+              <div key={i} className="rounded-2xl p-6 text-left" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                  style={{ background: 'rgba(163,193,122,0.2)' }}>
+                  <Icon className="w-5 h-5" style={{ color: '#A3C17A' }} />
+                </div>
+                <h3 className="font-bold text-white mb-1">{title}</h3>
+                <p className="text-white/50 text-sm">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </div>
-  );
+  )
 }
 
-export default ChallengesPage;
+export default ChallengesPage
+
+   

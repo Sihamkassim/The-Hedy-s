@@ -1,44 +1,40 @@
-import { Star, Calendar, DollarSign } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Star, Calendar, Leaf } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 function TherapistCard({ therapist }) {
-  const isFree = therapist.priceAmount === 0;
+  // Support both mock data (priceAmount) and API data (sessionPrice)
+  const price = therapist.sessionPrice ?? therapist.priceAmount
+  const isFree = price === 0 || price === null || therapist.isFree
+  const displayPrice = isFree ? 'Free' : (therapist.price ?? `$${price ?? '?'}/session`)
+  const initials = (therapist.name || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
       {/* Free Badge */}
       {isFree && (
-        <div className="bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-semibold px-3 py-1 text-center">
-          🌟 FREE SUPPORT AVAILABLE
+        <div className="text-white text-xs font-semibold px-3 py-1.5 text-center tracking-wide" style={{ background: '#4A5E3A' }}>
+          🌿 FREE SESSION AVAILABLE
         </div>
       )}
 
       <div className="p-6">
-        {/* Therapist Image */}
+        {/* Avatar + Name */}
         <div className="flex items-start space-x-4 mb-4">
-          <img
-            src={therapist.image}
-            alt={therapist.name}
-            className="w-20 h-20 rounded-full border-4 border-purple-100"
-          />
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white text-lg font-bold"
+            style={{ background: 'linear-gradient(135deg, #4A5E3A, #8A9E6C)' }}
+          >
+            {initials}
+          </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-800 mb-1">
-              {therapist.name}
-            </h3>
-            <p className="text-purple-600 font-medium text-sm mb-2">
+            <h3 className="text-lg font-bold text-gray-800 mb-0.5">{therapist.name}</h3>
+            <p className="text-sm font-medium mb-1.5" style={{ color: '#6B7F5E' }}>
               {therapist.specialization}
             </p>
-            {/* Rating */}
             <div className="flex items-center space-x-2">
-              <div className="flex items-center">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="ml-1 text-sm font-semibold text-gray-700">
-                  {therapist.rating}
-                </span>
-              </div>
-              <span className="text-xs text-gray-500">
-                ({therapist.reviews} reviews)
-              </span>
+              <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-semibold text-gray-700">{therapist.rating ?? '4.8'}</span>
+              <span className="text-xs text-gray-400">({therapist.reviews ?? therapist.reviewCount ?? '0'} reviews)</span>
             </div>
           </div>
         </div>
@@ -49,47 +45,48 @@ function TherapistCard({ therapist }) {
         </p>
 
         {/* Availability */}
-        <div className="mb-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-xs font-semibold text-gray-700">Available:</span>
+        {therapist.availability && therapist.availability.length > 0 && (
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <Calendar className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs font-semibold text-gray-600">Available:</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {therapist.availability.map((day, i) => (
+                <span key={i} className="text-xs px-2 py-0.5 rounded-full" style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
+                  {day}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {therapist.availability.map((day, index) => (
-              <span
-                key={index}
-                className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full"
-              >
-                {day}
-              </span>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Price */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid #E8EDE0' }}>
           <div className="flex items-center space-x-2">
-            <DollarSign className={`w-5 h-5 ${isFree ? 'text-teal-500' : 'text-purple-500'}`} />
-            <span className={`font-bold text-lg ${isFree ? 'text-teal-600' : 'text-gray-800'}`}>
-              {therapist.price}
+            <Leaf className="w-4 h-4" style={{ color: isFree ? '#4A5E3A' : '#C17A55' }} />
+            <span className="font-bold text-base" style={{ color: isFree ? '#4A5E3A' : '#2C3E1E' }}>
+              {displayPrice}
             </span>
           </div>
+          {isFree && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
+              No cost
+            </span>
+          )}
         </div>
 
         {/* Book Button */}
         <Link
           to={`/booking/${therapist.id}`}
-          className={`block w-full text-center py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
-            isFree
-              ? 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white'
-              : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white'
-          } shadow-md hover:shadow-lg transform hover:-translate-y-1`}
+          className="block w-full text-center py-3 px-4 rounded-xl font-semibold text-white text-sm transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5"
+          style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}
         >
           Book Session
         </Link>
       </div>
     </div>
-  );
+  )
 }
 
-export default TherapistCard;
+export default TherapistCard

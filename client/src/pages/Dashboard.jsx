@@ -1,280 +1,188 @@
-import { Link } from 'react-router-dom';
-import { Calendar, TrendingUp, Heart, Award, Clock, Video, MapPin, Plus, ArrowRight } from 'lucide-react';
-import { appointments, challenges, therapists } from '../data/mockData';
+﻿import { useState, useEffect } from "react"
+import { Calendar, CheckCircle, XCircle, Clock, Leaf, TrendingUp, Loader, Plus } from "lucide-react"
+import { appointmentAPI, challengeAPI } from "../api/services"
+import { useAuth } from "../context/AuthContext"
+import AuthModal from "../components/AuthModal"
 
-function Dashboard() {
-  const upcomingAppointments = appointments.filter(apt => apt.status === 'upcoming');
-  const activeChallenges = challenges.filter(c => c.daysCompleted > 0 && c.daysCompleted < c.totalDays);
-  const completedAppointments = appointments.filter(apt => apt.status === 'completed');
+export default function Dashboard() {
+  const { user, isAuthenticated } = useAuth()
+  const [appointments, setAppointments] = useState([])
+  const [myProgress, setMyProgress] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [showAuth, setShowAuth] = useState(false)
+  const [cancellingId, setCancellingId] = useState(null)
+  const [updatingId, setUpdatingId] = useState(null)
+
+  const handleCancel = async (id) => {
+    if (!window.confirm('Cancel this appointment?')) return
+    setCancellingId(id)
+    try {
+      await appointmentAPI.cancel(id)
+      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a))
+    } catch {}
+    setCancellingId(null)
+  }
+
+  const handleUpdateProgress = async (progressItem) => {
+    const newDays = Math.min((progressItem.completedDays || 0) + 1, progressItem.challenge?.duration || 30)
+    setUpdatingId(progressItem.id)
+    try {
+      await challengeAPI.updateProgress(progressItem.challengeId || progressItem.id, { completedDays: newDays })
+      setMyProgress(prev => prev.map(p => p.id === progressItem.id
+        ? { ...p, completedDays: newDays, progress: Math.round((newDays / (p.challenge?.duration || 30)) * 100) }
+        : p
+      ))
+    } catch {}
+    setUpdatingId(null)
+  }
+
+  useEffect(() => {
+    if (!isAuthenticated) { setLoading(false); return }
+    Promise.all([
+      appointmentAPI.getMyAppointments().then(r => setAppointments(r.data.data.appointments)).catch(() => {}),
+      challengeAPI.getMyProgress().then(r => setMyProgress(r.data.data.progress)).catch(() => {}),
+    ]).finally(() => setLoading(false))
+  }, [isAuthenticated])
+
+  const statusColor = { pending: "#F59E0B", confirmed: "#6B7F5E", completed: "#8A9E6C", cancelled: "#EF4444" }
+  const statusBg = { pending: "#FEF3C7", confirmed: "#E8EDE0", completed: "#E8EDE0", cancelled: "#FEE2E2" }
+
+  if (!isAuthenticated) return (
+    <>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#F7F4EF" }}>
+        <Leaf className="w-12 h-12 mb-4 opacity-30" style={{ color: "#4A5E3A" }} />
+        <h2 className="text-2xl font-bold mb-2" style={{ color: "#2C3E1E" }}>Sign in to view your dashboard</h2>
+        <p className="text-gray-500 text-sm mb-6">Track your appointments, challenges and progress all in one place.</p>
+        <button onClick={() => setShowAuth(true)} className="px-7 py-3 rounded-full font-semibold text-white text-sm" style={{ background: "linear-gradient(135deg, #4A5E3A, #6B7F5E)" }}>
+          Sign In
+        </button>
+      </div>
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+    </>
+  )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-8 text-white shadow-xl">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen" style={{ background: "#F7F4EF" }}>
+      {/* Header */}
+      <div className="py-12 px-4" style={{ background: "linear-gradient(135deg, #2C3E1E, #4A5E3A)" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-bold" style={{ background: "rgba(255,255,255,0.15)" }}>
+              {user?.name?.charAt(0)?.toUpperCase()}
+            </div>
             <div>
-              <h1 className="text-4xl font-bold mb-2">Welcome Back! 💜</h1>
-              <p className="text-xl text-white/90">
-                You're doing great on your wellness journey. Keep it up!
-              </p>
-            </div>
-            <Heart className="w-20 h-20 fill-white/20" />
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <Calendar className="w-8 h-8 text-purple-600" />
-              <span className="text-3xl font-bold text-gray-800">{upcomingAppointments.length}</span>
-            </div>
-            <p className="text-gray-600 font-semibold">Upcoming Sessions</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <TrendingUp className="w-8 h-8 text-teal-600" />
-              <span className="text-3xl font-bold text-gray-800">{activeChallenges.length}</span>
-            </div>
-            <p className="text-gray-600 font-semibold">Active Challenges</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <Award className="w-8 h-8 text-pink-600" />
-              <span className="text-3xl font-bold text-gray-800">{completedAppointments.length}</span>
-            </div>
-            <p className="text-gray-600 font-semibold">Completed Sessions</p>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <Heart className="w-8 h-8 text-red-500" />
-              <span className="text-3xl font-bold text-gray-800">
-                {Math.round(activeChallenges.reduce((sum, c) => sum + c.progress, 0) / (activeChallenges.length || 1))}%
-              </span>
-            </div>
-            <p className="text-gray-600 font-semibold">Avg Progress</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Upcoming Appointments */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                  <Calendar className="w-6 h-6 text-purple-600" />
-                  Upcoming Appointments
-                </h2>
-                <Link
-                  to="/therapists"
-                  className="text-purple-600 hover:text-purple-700 font-semibold text-sm flex items-center gap-1"
-                >
-                  <Plus className="w-4 h-4" />
-                  Book New
-                </Link>
-              </div>
-
-              {upcomingAppointments.length > 0 ? (
-                <div className="space-y-4">
-                  {upcomingAppointments.map((appointment) => {
-                    const therapist = therapists.find(t => t.id === appointment.therapistId);
-                    return (
-                      <div key={appointment.id} className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors">
-                        <div className="flex items-start gap-4">
-                          <img
-                            src={therapist?.image}
-                            alt={appointment.therapistName}
-                            className="w-16 h-16 rounded-full border-2 border-purple-100"
-                          />
-                          <div className="flex-1">
-                            <h3 className="font-bold text-gray-800 mb-1">
-                              {appointment.therapistName}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-2">
-                              {therapist?.specialization}
-                            </p>
-                            <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-                              <div className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4 text-purple-600" />
-                                <span>{new Date(appointment.date).toLocaleDateString()}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4 text-purple-600" />
-                                <span>{appointment.time}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                {appointment.type === 'Video Call' ? (
-                                  <Video className="w-4 h-4 text-purple-600" />
-                                ) : (
-                                  <MapPin className="w-4 h-4 text-purple-600" />
-                                )}
-                                <span>{appointment.type}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <button className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-colors text-sm">
-                            Join Session
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">No upcoming appointments</p>
-                  <Link
-                    to="/therapists"
-                    className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-                  >
-                    Book Your First Session
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Active Challenges */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                  <TrendingUp className="w-6 h-6 text-teal-600" />
-                  My Challenges
-                </h2>
-                <Link
-                  to="/challenges"
-                  className="text-teal-600 hover:text-teal-700 font-semibold text-sm flex items-center gap-1"
-                >
-                  View All
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {activeChallenges.length > 0 ? (
-                <div className="space-y-4">
-                  {activeChallenges.map((challenge) => (
-                    <div key={challenge.id} className="border border-gray-200 rounded-lg p-4 hover:border-teal-300 transition-colors">
-                      <div className="flex items-start gap-4">
-                        <div className="text-3xl">{challenge.icon}</div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-gray-800 mb-2">{challenge.title}</h3>
-                          <div className="mb-3">
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-600">Progress</span>
-                              <span className="font-semibold text-teal-600">{challenge.progress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-gradient-to-r from-teal-500 to-teal-600 h-full rounded-full transition-all"
-                                style={{ width: `${challenge.progress}%` }}
-                              />
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            Day {challenge.daysCompleted} of {challenge.totalDays}
-                          </p>
-                        </div>
-                        <Link
-                          to="/challenges"
-                          className="px-4 py-2 bg-teal-100 text-teal-700 rounded-lg font-semibold hover:bg-teal-200 transition-colors text-sm"
-                        >
-                          Continue
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">No active challenges yet</p>
-                  <Link
-                    to="/challenges"
-                    className="inline-block bg-teal-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-teal-700 transition-colors"
-                  >
-                    Start a Challenge
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="font-bold text-gray-800 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <Link
-                  to="/therapists"
-                  className="block w-full bg-purple-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-                >
-                  Book a Session
-                </Link>
-                <Link
-                  to="/challenges"
-                  className="block w-full bg-teal-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors"
-                >
-                  Browse Challenges
-                </Link>
-                <Link
-                  to="/free-help"
-                  className="block w-full bg-pink-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors"
-                >
-                  Get Free Support
-                </Link>
-              </div>
-            </div>
-
-            {/* Recommended Content */}
-            <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-6">
-              <h3 className="font-bold text-gray-800 mb-4">Recommended for You</h3>
-              <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">
-                    🧘‍♀️ Mindfulness Meditation
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    5-minute guided meditation for anxiety relief
-                  </p>
-                  <button className="text-purple-600 hover:text-purple-700 font-semibold text-sm">
-                    Start Session →
-                  </button>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">
-                    📖 Article: Building Self-Love
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    5 daily practices to cultivate self-compassion
-                  </p>
-                  <button className="text-purple-600 hover:text-purple-700 font-semibold text-sm">
-                    Read More →
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Crisis Support */}
-            <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-6 text-white">
-              <h3 className="font-bold mb-2">Need Immediate Help?</h3>
-              <p className="text-sm text-white/90 mb-4">
-                If you're in crisis, we're here 24/7
-              </p>
-              <a
-                href="tel:988"
-                className="block w-full bg-white text-red-600 text-center py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors"
-              >
-                Call 988 Now
-              </a>
+              <p className="text-white/70 text-sm">Welcome back,</p>
+              <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-export default Dashboard;
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: Calendar, label: "Total Appointments", value: appointments.length },
+            { icon: CheckCircle, label: "Completed", value: appointments.filter(a => a.status === "completed").length },
+            { icon: Clock, label: "Upcoming", value: appointments.filter(a => a.status === "confirmed" || a.status === "pending").length },
+            { icon: TrendingUp, label: "Challenges Active", value: myProgress.length },
+          ].map((s, i) => (
+            <div key={i} className="bg-white rounded-2xl border p-5" style={{ borderColor: "#E8EDE0" }}>
+              <s.icon className="w-5 h-5 mb-2" style={{ color: "#6B7F5E" }} />
+              <div className="text-2xl font-bold mb-0.5" style={{ color: "#2C3E1E" }}>{loading ? "—" : s.value}</div>
+              <div className="text-xs text-gray-400">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Appointments */}
+        <div>
+          <h2 className="text-lg font-bold mb-4" style={{ color: "#2C3E1E" }}>My Appointments</h2>
+          {loading ? (
+            <div className="flex justify-center py-12"><Loader className="w-6 h-6 animate-spin" style={{ color: "#6B7F5E" }} /></div>
+          ) : appointments.length === 0 ? (
+            <div className="bg-white rounded-2xl border p-10 text-center" style={{ borderColor: "#E8EDE0" }}>
+              <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: "#6B7F5E" }} />
+              <p className="text-gray-500 text-sm">No appointments yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {appointments.map((a, i) => (
+                <div key={a.id || i} className="bg-white rounded-2xl border p-5 flex items-center justify-between gap-4" style={{ borderColor: "#E8EDE0" }}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm" style={{ background: "linear-gradient(135deg, #4A5E3A, #8A9E6C)" }}>
+                      {(a.therapist?.name || "T").charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm" style={{ color: "#2C3E1E" }}>{a.therapist?.name || "Therapist"}</p>
+                      <p className="text-xs text-gray-400">{a.therapist?.specialization}</p>
+                    </div>
+                  </div>
+                  <div className="text-right text-xs text-gray-500">
+                    <p>{new Date(a.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
+                    <p>{a.time}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full capitalize"
+                      style={{ background: statusBg[a.status] || "#E8EDE0", color: statusColor[a.status] || "#6B7F5E" }}>
+                      {a.status}
+                    </span>
+                    {(a.status === 'pending' || a.status === 'confirmed') && (
+                      <button
+                        onClick={() => handleCancel(a.id)}
+                        disabled={cancellingId === a.id}
+                        className="text-xs px-3 py-1 rounded-full border transition-colors hover:bg-red-50"
+                        style={{ borderColor: '#EF4444', color: '#EF4444' }}>
+                        {cancellingId === a.id ? '...' : 'Cancel'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Challenge Progress */}
+        <div>
+          <h2 className="text-lg font-bold mb-4" style={{ color: "#2C3E1E" }}>Challenge Progress</h2>
+          {loading ? (
+            <div className="flex justify-center py-8"><Loader className="w-6 h-6 animate-spin" style={{ color: "#6B7F5E" }} /></div>
+          ) : myProgress.length === 0 ? (
+            <div className="bg-white rounded-2xl border p-10 text-center" style={{ borderColor: "#E8EDE0" }}>
+              <TrendingUp className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: "#6B7F5E" }} />
+              <p className="text-gray-500 text-sm">No challenges joined yet.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {myProgress.map((p, i) => (
+                <div key={p.id || i} className="bg-white rounded-2xl border p-5" style={{ borderColor: "#E8EDE0" }}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-bold text-sm" style={{ color: "#2C3E1E" }}>{p.challenge?.title || "Challenge"}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{p.completedDays} / {p.challenge?.duration} days</p>
+                    </div>
+                    <span className="text-sm font-bold" style={{ color: "#6B7F5E" }}>{Math.round(p.progress || 0)}%</span>
+                  </div>
+                  <div className="w-full rounded-full h-2" style={{ background: "#E8EDE0" }}>
+                    <div className="h-2 rounded-full transition-all" style={{ width: `${p.progress || 0}%`, background: "linear-gradient(90deg, #4A5E3A, #8A9E6C)" }} />
+                  </div>
+                  {(p.progress || 0) < 100 && (
+                    <button
+                      onClick={() => handleUpdateProgress(p)}
+                      disabled={updatingId === p.id}
+                      className="mt-3 flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
+                      style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
+                      <Plus className="w-3 h-3" />
+                      {updatingId === p.id ? 'Saving...' : 'Log Today'}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

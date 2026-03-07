@@ -1,202 +1,264 @@
-import { Shield, Phone, Heart, AlertCircle, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { freeHelpResources, therapists } from '../data/mockData';
+import { useState, useEffect } from 'react'
+import { Phone, Shield, Leaf, AlertTriangle, MessageCircle, ChevronRight, ExternalLink, Loader } from 'lucide-react'
+import { supportAPI, aiAPI } from '../api/services'
+import { useAuth } from '../context/AuthContext'
+import AuthModal from '../components/AuthModal'
+
+const mockResources = [
+  { id: '1', name: 'Suicide & Crisis Lifeline', phone: '988', category: 'Crisis' },
+  { id: '2', name: 'Crisis Text Line', phone: 'Text HOME to 741741', category: 'Crisis' },
+  { id: '3', name: 'Domestic Violence Hotline', phone: '1-800-799-SAFE', category: 'Safety' },
+  { id: '4', name: 'RAINN Sexual Assault Hotline', phone: '1-800-656-HOPE', category: 'Safety' },
+  { id: '5', name: 'Substance Abuse Helpline', phone: '1-800-662-HELP', category: 'Substance' },
+  { id: '6', name: 'Eating Disorders Helpline', phone: '1-800-931-2237', category: 'Eating' },
+]
+
+const CATEGORY_META = {
+  Crisis:    { color: '#EF4444', bg: '#FEF2F2', label: 'Crisis Support' },
+  Safety:    { color: '#C17A55', bg: '#FDF6F0', label: 'Safety & Abuse' },
+  Substance: { color: '#4A5E3A', bg: '#E8EDE0', label: 'Substance Support' },
+  Eating:    { color: '#6B7F5E', bg: '#EFF5E8', label: 'Eating Disorders' },
+}
 
 function FreeHelpPage() {
+  const { isAuthenticated } = useAuth()
+  const [resources, setResources] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [messages, setMessages] = useState([
+    { role: 'ai', text: "Hi, I'm here to listen. How are you feeling today?" }
+  ])
+  const [input, setInput] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
+  const [emergency, setEmergency] = useState(false)
+
+  useEffect(() => {
+    supportAPI.getAll()
+      .then(r => setResources(r.data.data.resources || r.data.data || []))
+      .catch(() => setResources(mockResources))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const grouped = resources.reduce((acc, r) => {
+    const cat = r.category || 'General'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(r)
+    return acc
+  }, {})
+
+  const sendMessage = async () => {
+    if (!input.trim() || aiLoading) return
+    if (!isAuthenticated) { setShowAuth(true); return }
+    const userMsg = input.trim()
+    setInput('')
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }])
+    setAiLoading(true)
+    try {
+      const r = await aiAPI.chat(userMsg)
+      const { reply, isEmergency } = r.data.data
+      if (isEmergency) setEmergency(true)
+      setMessages(prev => [...prev, { role: 'ai', text: reply }])
+    } catch {
+      setMessages(prev => [...prev, { role: 'ai', text: "I'm having trouble connecting right now. If you're in crisis, please call 988 immediately." }])
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-teal-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-teal-100 rounded-full mb-6">
-            <Shield className="w-12 h-12 text-teal-600" />
+    <div className="min-h-screen" style={{ background: '#F7F4EF' }}>
+      {/* Hero */}
+      <div className="py-16 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-6"
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#A3C17A' }}>
+            <Shield className="w-4 h-4" /> Free & confidential support
           </div>
-          <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            Free Support & Crisis Help
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            You are not alone
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-            You are not alone. We provide free, confidential support for women in crisis. 
-            All services below are completely free—no payment required, ever.
+          <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
+            Free, confidential support is always available. Below you'll find crisis hotlines, 
+            support resources, and our AI companion to talk through how you're feeling.
           </p>
-          <div className="inline-flex items-center gap-3 bg-red-50 border-2 border-red-200 rounded-lg px-6 py-4">
-            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0" />
-            <div className="text-left">
-              <p className="font-bold text-red-800">In immediate danger?</p>
-              <p className="text-red-700">Call 911 or go to your nearest emergency room</p>
+
+          {/* Emergency banner */}
+          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl border text-left"
+            style={{ background: 'rgba(239,68,68,0.15)', borderColor: 'rgba(239,68,68,0.4)' }}>
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" style={{ color: '#EF4444' }} />
+            <div>
+              <p className="font-bold text-white text-sm">In immediate danger?</p>
+              <p className="text-white/70 text-xs">Call 911 or go to your nearest emergency room now</p>
             </div>
-          </div>
-        </div>
-
-        {/* Crisis Hotlines */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 mb-12 text-white shadow-xl">
-          <h2 className="text-3xl font-bold mb-6 text-center">24/7 Crisis Hotlines</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 text-center">
-              <Phone className="w-10 h-10 mx-auto mb-3" />
-              <h3 className="font-bold text-lg mb-2">Suicide & Crisis Lifeline</h3>
-              <a href="tel:988" className="text-3xl font-bold hover:underline">988</a>
-              <p className="text-sm mt-2 text-white/80">Available 24/7</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 text-center">
-              <Phone className="w-10 h-10 mx-auto mb-3" />
-              <h3 className="font-bold text-lg mb-2">Domestic Violence Hotline</h3>
-              <a href="tel:1-800-799-7233" className="text-2xl font-bold hover:underline">1-800-799-SAFE</a>
-              <p className="text-sm mt-2 text-white/80">Available 24/7</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-6 text-center">
-              <Phone className="w-10 h-10 mx-auto mb-3" />
-              <h3 className="font-bold text-lg mb-2">Substance Abuse Helpline</h3>
-              <a href="tel:1-800-662-4357" className="text-2xl font-bold hover:underline">1-800-662-HELP</a>
-              <p className="text-sm mt-2 text-white/80">Available 24/7</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Free Support Categories */}
-        <div className="space-y-8">
-          {freeHelpResources.map((resource) => {
-            const bgColors = {
-              purple: 'from-purple-500 to-purple-600',
-              teal: 'from-teal-500 to-teal-600',
-              pink: 'from-pink-500 to-pink-600'
-            };
-
-            const lightColors = {
-              purple: 'bg-purple-50',
-              teal: 'bg-teal-50',
-              pink: 'bg-pink-50'
-            };
-
-            const resourceTherapists = therapists.filter(t => resource.therapists.includes(t.id));
-
-            return (
-              <div key={resource.id} className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                {/* Header */}
-                <div className={`bg-gradient-to-r ${bgColors[resource.color]} p-6 text-white`}>
-                  <div className="flex items-start gap-4">
-                    <div className="text-5xl">{resource.icon}</div>
-                    <div className="flex-1">
-                      <h2 className="text-3xl font-bold mb-2">{resource.title}</h2>
-                      <p className="text-white/90 mb-3">{resource.description}</p>
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-4 py-2 rounded-lg">
-                        <Phone className="w-5 h-5" />
-                        <span className="font-bold">{resource.emergencyNumber}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  {/* Services */}
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">What We Offer:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {resource.services.map((service, index) => (
-                        <div key={index} className={`${lightColors[resource.color]} p-3 rounded-lg flex items-start gap-2`}>
-                          <Heart className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700">{service}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Available Therapists */}
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">
-                      <Users className="w-6 h-6 inline mr-2" />
-                      Available Specialists:
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {resourceTherapists.map((therapist) => (
-                        <div key={therapist.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                          <img
-                            src={therapist.image}
-                            alt={therapist.name}
-                            className="w-16 h-16 rounded-full border-2 border-purple-200"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800">{therapist.name}</h4>
-                            <p className="text-sm text-gray-600">{therapist.specialization}</p>
-                            <Link
-                              to={`/booking/${therapist.id}`}
-                              className="text-sm text-purple-600 hover:text-purple-700 font-semibold mt-1 inline-block"
-                            >
-                              Book Free Session →
-                            </Link>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Additional Resources */}
-        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            How to Get Help
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-                <span className="text-2xl font-bold text-purple-600">1</span>
-              </div>
-              <h3 className="font-bold text-gray-800 mb-2">Reach Out</h3>
-              <p className="text-gray-600">
-                Call a hotline, book a free session, or send us a message. All communications are confidential.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-100 rounded-full mb-4">
-                <span className="text-2xl font-bold text-teal-600">2</span>
-              </div>
-              <h3 className="font-bold text-gray-800 mb-2">Talk to a Specialist</h3>
-              <p className="text-gray-600">
-                Connect with trained therapists who specialize in your specific situation and needs.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-pink-100 rounded-full mb-4">
-                <span className="text-2xl font-bold text-pink-600">3</span>
-              </div>
-              <h3 className="font-bold text-gray-800 mb-2">Start Healing</h3>
-              <p className="text-gray-600">
-                Get personalized support, resources, and a care plan tailored to your recovery journey.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Reassurance Section */}
-        <div className="mt-12 text-center bg-gradient-to-r from-purple-500 to-teal-500 rounded-2xl p-12 text-white">
-          <Heart className="w-16 h-16 mx-auto mb-6 fill-white" />
-          <h2 className="text-3xl font-bold mb-4">You Are Not Alone</h2>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto mb-6">
-            Every woman deserves support, safety, and healing. These services are free because 
-            your wellbeing matters more than money. Reach out—we're here for you.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/therapists"
-              className="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
-            >
-              View All Therapists
-            </Link>
-            <a
-              href="tel:988"
-              className="bg-red-600 text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition-colors"
-            >
-              Call Crisis Line: 988
-            </a>
           </div>
         </div>
       </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
+
+        {/* 24/7 Crisis row */}
+        <section>
+          <h2 className="text-xl font-bold mb-5" style={{ color: '#2C3E1E' }}>24/7 Crisis Hotlines</h2>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { name: 'Suicide & Crisis Lifeline', number: '988', desc: 'Call or text anytime' },
+              { name: 'Crisis Text Line', number: 'Text HOME to 741741', desc: 'Anonymous text support' },
+              { name: 'Domestic Violence', number: '1-800-799-SAFE', desc: '24/7 safety support' },
+            ].map((h, i) => (
+              <div key={i} className="rounded-2xl p-6 flex flex-col gap-2"
+                style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)' }}>
+                <Phone className="w-6 h-6 text-white/80" />
+                <p className="text-white font-semibold text-sm">{h.name}</p>
+                <a href={`tel:${h.number.replace(/\D/g,'')}`}
+                  className="text-white text-2xl font-bold hover:opacity-80">{h.number}</a>
+                <p className="text-white/60 text-xs">{h.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* All resources grouped */}
+        <section>
+          <h2 className="text-xl font-bold mb-5" style={{ color: '#2C3E1E' }}>Support Resources</h2>
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader className="w-6 h-6 animate-spin" style={{ color: '#6B7F5E' }} />
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(grouped).map(([cat, items]) => {
+                const meta = CATEGORY_META[cat] || { color: '#6B7F5E', bg: '#E8EDE0', label: cat }
+                return (
+                  <div key={cat}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full"
+                        style={{ background: meta.bg, color: meta.color }}>
+                        {meta.label}
+                      </span>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {items.map(r => (
+                        <div key={r.id} className="flex items-center gap-4 rounded-2xl border p-4"
+                          style={{ background: '#fff', borderColor: '#E8EDE0' }}>
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: meta.bg }}>
+                            <Phone className="w-4 h-4" style={{ color: meta.color }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm truncate" style={{ color: '#2C3E1E' }}>{r.name}</p>
+                            <p className="text-xs font-medium mt-0.5" style={{ color: meta.color }}>{r.phone}</p>
+                          </div>
+                          {r.website && (
+                            <a href={r.website} target="_blank" rel="noreferrer"
+                              className="flex-shrink-0 opacity-40 hover:opacity-80">
+                              <ExternalLink className="w-4 h-4" style={{ color: '#4A5E3A' }} />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* AI Chat section */}
+        <section>
+          <div className="rounded-3xl overflow-hidden border" style={{ borderColor: '#E8EDE0' }}>
+            {/* Header */}
+            <div className="p-6 flex items-center justify-between cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}
+              onClick={() => setChatOpen(o => !o)}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: 'rgba(163,193,122,0.2)' }}>
+                  <MessageCircle className="w-5 h-5" style={{ color: '#A3C17A' }} />
+                </div>
+                <div>
+                  <p className="font-bold text-white">Talk to our AI Companion</p>
+                  <p className="text-xs text-white/60">Private, judgment-free support anytime</p>
+                </div>
+              </div>
+              <ChevronRight className={`w-5 h-5 text-white/60 transition-transform ${chatOpen ? 'rotate-90' : ''}`} />
+            </div>
+
+            {chatOpen && (
+              <div style={{ background: '#fff' }}>
+                {emergency && (
+                  <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold"
+                    style={{ background: '#FEF2F2', color: '#EF4444' }}>
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                    Crisis detected — please call 988 or text HOME to 741741
+                  </div>
+                )}
+                {/* Messages */}
+                <div className="h-72 overflow-y-auto p-4 space-y-3">
+                  {messages.map((m, i) => (
+                    <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className="max-w-xs px-4 py-2.5 rounded-2xl text-sm"
+                        style={m.role === 'user'
+                          ? { background: '#4A5E3A', color: '#fff', borderBottomRightRadius: 4 }
+                          : { background: '#E8EDE0', color: '#2C3E1E', borderBottomLeftRadius: 4 }}>
+                        {m.text}
+                      </div>
+                    </div>
+                  ))}
+                  {aiLoading && (
+                    <div className="flex justify-start">
+                      <div className="px-4 py-3 rounded-2xl" style={{ background: '#E8EDE0' }}>
+                        <Loader className="w-4 h-4 animate-spin" style={{ color: '#6B7F5E' }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Input */}
+                <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: '#E8EDE0' }}>
+                  <input
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                    placeholder={isAuthenticated ? "Share how you're feeling…" : "Sign in to chat with our AI…"}
+                    className="flex-1 text-sm rounded-full px-4 py-2.5 outline-none border"
+                    style={{ background: '#F7F4EF', borderColor: '#E8EDE0', color: '#2C3E1E' }}
+                  />
+                  <button onClick={sendMessage}
+                    disabled={!input.trim() || aiLoading}
+                    className="w-9 h-9 rounded-full flex items-center justify-center transition-opacity disabled:opacity-40"
+                    style={{ background: '#4A5E3A' }}>
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+                {!isAuthenticated && (
+                  <div className="px-4 pb-4 text-center">
+                    <button onClick={() => setShowAuth(true)}
+                      className="text-xs font-semibold underline" style={{ color: '#4A5E3A' }}>
+                      Sign in to use the AI companion
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Bottom reassurance */}
+        <section className="text-center py-8">
+          <Leaf className="w-8 h-8 mx-auto mb-3 opacity-30" style={{ color: '#4A5E3A' }} />
+          <p className="text-sm text-gray-400 max-w-md mx-auto">
+            All resources listed are free of charge. Your privacy matters — 
+            we never share your information with anyone.
+          </p>
+        </section>
+      </div>
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </div>
-  );
+  )
 }
 
-export default FreeHelpPage;
+export default FreeHelpPage
+
+       

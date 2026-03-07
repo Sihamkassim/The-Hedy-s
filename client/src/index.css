@@ -2,4 +2,75 @@
 
 @theme {
   --animation-spin-slow: spin 3s linear infinite;
+
+  /* Nature-based color palette */
+  --color-sage: #6B7F5E;
+  --color-sage-light: #8A9E6C;
+  --color-sage-dark: #4A5E3A;
+  --color-moss: #2C3E1E;
+  --color-cream: #F7F4EF;
+  --color-cream-dark: #EDE9E0;
+  --color-mint: #E8EDE0;
+  --color-bark: #C17A55;
+  --color-bark-light: #D4956F;
+  --color-stone: #8C8C7A;
+  --color-stone-light: #B5B5A0;
+  --color-forest: #1E2D14;
+}
+
+:root {
+  --primary: #6B7F5E;
+  --primary-light: #8A9E6C;
+  --primary-dark: #4A5E3A;
+  --secondary: #C17A55;
+  --bg-cream: #F7F4EF;
+  --bg-mint: #E8EDE0;
+  --text-forest: #2C3E1E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #F7F4EF;
+  color: #2C3E1E;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #E8EDE0;
+}
+::-webkit-scrollbar-thumb {
+  background: #6B7F5E;
+  border-radius: 3px;
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid #6B7F5E;
+  outline-offset: 2px;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
