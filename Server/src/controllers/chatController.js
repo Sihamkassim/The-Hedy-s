@@ -18,7 +18,10 @@ exports.getChatContacts = catchAsync(async (req, res) => {
     }
 
     const appointments = await prisma.appointment.findMany({
-      where: { therapistId: therapist.id },
+      where: { 
+        therapistId: therapist.id,
+        status: { in: ['confirmed', 'completed'] } // Show patients with confirmed or completed appointments
+      },
       select: {
         user: {
           select: { id: true, name: true, email: true, role: true },
@@ -40,9 +43,33 @@ exports.getChatContacts = catchAsync(async (req, res) => {
     });
   }
 
+  // Find all confirmed or completed appointments for this patient
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      userId: req.user.id,
+      status: { in: ['confirmed', 'completed'] }
+    },
+    include: {
+      therapist: true,
+    }
+  });
+
+  const therapistEmails = appointments
+    .filter(app => app.therapist && app.therapist.email)
+    .map(app => app.therapist.email);
+
+  if (therapistEmails.length === 0) {
+    return res.status(200).json({
+      status: 'success',
+      data: { contacts: [] },
+    });
+  }
+
+  // Find the actual User accounts for these therapists (to get their User ID for chatting)
   const contacts = await prisma.user.findMany({
     where: {
       role: 'doctor',
+      email: { in: therapistEmails },
       NOT: { id: req.user.id },
     },
     select: { id: true, name: true, email: true, role: true },
