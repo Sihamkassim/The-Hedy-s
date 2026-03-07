@@ -109,7 +109,7 @@ export default function TherapistsPage() {
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                       style={{ background: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" : "#FEF3C7", color: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "var(--primary)" : "#78350F" }}>
-                      {(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "Free" : `$${t.sessionPrice || t.priceAmount || t.pricePerSession || t.sessionPrice || "Paid"}`}
+                      {(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "Free" : `ETB ${t.sessionPrice || t.priceAmount || t.pricePerSession || t.sessionPrice || "Paid"}`}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">{t.bio || `Providing spiritual guidance and support.`}</p>

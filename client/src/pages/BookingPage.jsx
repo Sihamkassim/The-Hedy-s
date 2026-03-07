@@ -104,7 +104,7 @@ export default function BookingPage() {
               </div>
               <div className="flex justify-between text-sm mt-2">
                 <span className="text-gray-400">Session Price</span>
-                <span className="font-semibold" style={{ color: "var(--primary)" }}>{(provider?.isFreeSupport || provider?.sessionPrice === 0 || provider?.priceAmount === 0 || provider?.pricePerSession === 0) ? "Free" : `$${provider?.sessionPrice || provider?.priceAmount || provider?.pricePerSession || "Paid"}`}</span>
+                <span className="font-semibold" style={{ color: "var(--primary)" }}>{(provider?.isFreeSupport || provider?.sessionPrice === 0 || provider?.priceAmount === 0 || provider?.pricePerSession === 0) ? "Free" : `ETB ${provider?.sessionPrice || provider?.priceAmount || provider?.pricePerSession || "Paid"}`}</span>
               </div>
             </div>
           </div>

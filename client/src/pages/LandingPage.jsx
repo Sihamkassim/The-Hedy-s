@@ -162,7 +162,7 @@ export default function LandingPage() {
                       <span className="text-xs font-semibold text-gray-700">{t.rating || "5.0"}</span>
                     </div>
                     <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: (t.isFreeSupport || t.priceAmount === 0) ? "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" : "#FEF3C7", color: (t.isFreeSupport || t.priceAmount === 0) ? "var(--primary)" : "#92400E" }}>
-                      {(t.isFreeSupport || t.priceAmount === 0) ? "Free" : `$${t.sessionPrice || t.priceAmount}`}
+                      {(t.isFreeSupport || t.priceAmount === 0) ? "Free" : `ETB ${t.sessionPrice || t.priceAmount}`}
                     </span>
                   </div>
                 </Link>

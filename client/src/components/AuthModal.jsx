@@ -269,7 +269,7 @@ export default function AuthModal({ onClose }) {
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Session Price ($)</label>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Session Price (ETB)</label>
                   <input type="number" placeholder="0 for free" value={form.sessionPrice}
                     onChange={e => setForm({ ...form, sessionPrice: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />

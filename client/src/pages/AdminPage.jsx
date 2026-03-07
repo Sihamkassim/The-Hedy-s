@@ -432,7 +432,7 @@ export default function AdminPage() {
                         { key: 'email', label: 'Email', placeholder: 'jane@herspace.com', type: 'email' },
                         { key: 'specialization', label: 'Specialization', placeholder: 'Anxiety & Depression', type: 'text' },
                         { key: 'experience', label: 'Years Experience', placeholder: '10', type: 'number' },
-                        { key: 'sessionPrice', label: 'Session Price ($)', placeholder: '0 = free', type: 'number' },
+                        { key: 'sessionPrice', label: 'Session Price (ETB)', placeholder: '0 = free', type: 'number' },
                       ].map(f => (
                         <div key={f.key}>
                           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{f.label}</label>
@@ -482,7 +482,7 @@ export default function AdminPage() {
                           <p className="text-xs text-gray-400">{t.email}</p>
                           <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full font-medium"
                             style={{ background: (t.sessionPrice === 0 || t.isFreeSupport) ? 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' : '#FEF3C7', color: (t.sessionPrice === 0 || t.isFreeSupport) ? 'var(--primary)' : '#D97706' }}>
-                            {(t.sessionPrice === 0 || t.isFreeSupport) ? 'Free' : `$${t.sessionPrice}/session`}
+                            {(t.sessionPrice === 0 || t.isFreeSupport) ? 'Free' : `ETB ${t.sessionPrice}/session`}
                           </span>
                         </div>
                         <div className="flex flex-col gap-2 shrink-0">
