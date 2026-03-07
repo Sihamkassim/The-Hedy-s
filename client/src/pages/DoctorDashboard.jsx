@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 const STATUS_COLORS = {
   pending:   { bg: '#FEF3C7', text: '#D97706' },
   paid:      { bg: '#DBEAFE', text: '#2563EB' },
-  confirmed: { bg: '#E8EDE0', text: '#4A5E3A' },
+  confirmed: { bg: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', text: 'var(--primary)' },
   completed: { bg: '#D1FAE5', text: '#065F46' },
   cancelled: { bg: '#FEE2E2', text: '#EF4444' },
 }
@@ -146,10 +146,10 @@ export default function DoctorDashboard() {
 
   if (therapist?.status === 'pending') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F4EF]">
-        <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-[#D4DBC8]">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--base-bg)]">
+        <div className="bg-base-bg p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-[#D4DBC8]">
           <Clock className="w-16 h-16 mx-auto mb-4 text-[#D97706]" />
-          <h2 className="text-2xl font-bold text-[#2C3E1E] mb-2">Application Pending</h2>
+          <h2 className="text-2xl font-bold text-[var(--base-text)] mb-2">Application Pending</h2>
           <p className="text-gray-600 mb-6">
             Your application to join HerSpace as a therapist is currently under review by our admin team.
             We will notify you once your credentials have been verified.
@@ -161,10 +161,10 @@ export default function DoctorDashboard() {
 
   if (therapist?.status === 'rejected') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#F7F4EF]">
-        <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-red-200">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--base-bg)]">
+        <div className="bg-base-bg p-8 rounded-3xl max-w-md w-full text-center shadow-xl border border-red-200">
           <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-          <h2 className="text-2xl font-bold text-[#2C3E1E] mb-2">Application Rejected</h2>
+          <h2 className="text-2xl font-bold text-[var(--base-text)] mb-2">Application Rejected</h2>
           <p className="text-gray-600 mb-6">
             Unfortunately, your application to join HerSpace was not approved at this time. Please contact support for more detailed feedback regarding your documentation.
           </p>
@@ -174,19 +174,19 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#F7F4EF' }}>
+    <div className="min-h-screen relative" style={{ background: 'var(--base-bg)' }}>
       {showTerms && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-[#2C3E1E] mb-4">Therapist Terms & Conditions</h2>
-            <div className="text-sm text-gray-600 space-y-4 mb-6 p-4 bg-[#F7F4EF] rounded-xl border border-[#D4DBC8]">
+          <div className="bg-base-bg rounded-3xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-[var(--base-text)] mb-4">Therapist Terms & Conditions</h2>
+            <div className="text-sm text-gray-600 space-y-4 mb-6 p-4 bg-[var(--base-bg)] rounded-xl border border-[#D4DBC8]">
               <p><strong>1. Professional Conduct:</strong> As a verified therapist on HerSpace, you agree to uphold the highest standard of professional ethics and confidentiality regarding patient data and conversations.</p>
               <p><strong>2. Accuracy of Diagnosis:</strong> Any advice, diagnosis, or health information you provide must fall strictly within your certified areas of expertise.</p>
               <p><strong>3. Emergency Protocols:</strong> If a user expresses intent for self-harm or harm to others, you are obligated to refer them strictly to emergency hotlines and follow standard psychiatric emergency procedures immediately.</p>
               <p><strong>4. Verification Accuracy:</strong> By accepting you reaffirm that all documents uploaded during registration are authentic, unedited, and legally bind you to practice.</p>
             </div>
             <label className="flex items-start gap-3 mb-6 cursor-pointer">
-              <input type="checkbox" className="mt-1 w-4 h-4 text-[#4A5E3A] rounded border-gray-300 focus:ring-[#4A5E3A]" 
+              <input type="checkbox" className="mt-1 w-4 h-4 text-[var(--primary)] rounded border-gray-300 focus:ring-[var(--primary)]" 
                 checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
               <span className="text-sm font-medium text-gray-700">I have read and agree to strictly follow the mental health and platform guidelines stated above.</span>
             </label>
@@ -194,7 +194,7 @@ export default function DoctorDashboard() {
               <p className="text-sm text-red-600 mb-4">{termsError}</p>
             )}
             <button onClick={handleAcceptTerms} disabled={!termsAccepted || termsSubmitting}
-              className={`w-full py-3 rounded-xl font-bold text-white transition-all ${termsAccepted ? 'bg-[#4A5E3A] hover:bg-[#2C3E1E]' : 'bg-gray-300 cursor-not-allowed'}`}>
+              className={`w-full py-3 rounded-xl font-bold text-primary-inverse transition-all ${termsAccepted ? 'bg-[var(--primary)] hover:bg-[var(--base-text)]' : 'bg-gray-300 cursor-not-allowed'}`}>
               {termsSubmitting ? 'Saving...' : 'Accept and Continue to Dashboard'}
             </button>
           </div>
@@ -202,17 +202,17 @@ export default function DoctorDashboard() {
       )}
 
       {/* Header */}
-      <div className="py-12 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+      <div className="py-12 px-4" style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
         <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-bold"
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-primary-inverse text-2xl font-bold"
             style={{ background: 'rgba(255,255,255,0.15)' }}>
             {user?.name?.charAt(0)?.toUpperCase()}
           </div>
           <div>
-            <p className="text-white/60 text-sm">{user?.role === 'spiritual_leader' ? 'Spiritual Guide Dashboard' : 'Doctor Dashboard'}</p>
-            <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
+            <p className="text-primary-inverse opacity-60 text-sm">{user?.role === 'spiritual_leader' ? 'Spiritual Guide Dashboard' : 'Doctor Dashboard'}</p>
+            <h1 className="text-2xl font-bold text-primary-inverse">{user?.name}</h1>
             {therapist && (
-              <p className="text-white/70 text-sm mt-0.5">
+              <p className="text-primary-inverse opacity-70 text-sm mt-0.5">
                 <Stethoscope className="inline w-3.5 h-3.5 mr-1" />
                 {therapist.specialization || therapist.religion}
               </p>
@@ -237,14 +237,14 @@ export default function DoctorDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: Calendar,     label: 'Total Sessions',  value: stats.total,     color: '#6B7F5E' },
+            { icon: Calendar,     label: 'Total Sessions',  value: stats.total,     color: 'var(--primary)' },
             { icon: Clock,        label: 'Pending',         value: stats.pending,   color: '#D97706' },
-            { icon: CheckCircle,  label: 'Confirmed',       value: stats.confirmed, color: '#4A5E3A' },
+            { icon: CheckCircle,  label: 'Confirmed',       value: stats.confirmed, color: 'var(--primary)' },
             { icon: CheckCircle,  label: 'Completed',       value: stats.completed, color: '#065F46' },
           ].map((s, i) => (
-            <div key={i} className="bg-white rounded-2xl border p-5" style={{ borderColor: '#E8EDE0' }}>
+            <div key={i} className="bg-base-bg rounded-2xl border p-5" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
               <s.icon className="w-5 h-5 mb-2" style={{ color: s.color }} />
-              <div className="text-2xl font-bold mb-0.5" style={{ color: '#2C3E1E' }}>
+              <div className="text-2xl font-bold mb-0.5" style={{ color: 'var(--base-text)' }}>
                 {loading ? '—' : s.value}
               </div>
               <div className="text-xs text-gray-400">{s.label}</div>
@@ -255,11 +255,11 @@ export default function DoctorDashboard() {
         {/* View toggles */}
         <div className="flex gap-4 border-b border-gray-200">
           <button onClick={() => setActiveView('appointments')}
-            className={`pb-3 text-sm font-semibold transition-colors ${activeView === 'appointments' ? 'text-[#4A5E3A] border-b-2 border-[#4A5E3A]' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`pb-3 text-sm font-semibold transition-colors ${activeView === 'appointments' ? 'text-[var(--primary)] border-b-2 border-[var(--primary)]' : 'text-gray-400 hover:text-gray-600'}`}>
             My Appointments
           </button>
           <button onClick={() => setActiveView('challenges')}
-            className={`pb-3 text-sm font-semibold transition-colors ${activeView === 'challenges' ? 'text-[#4A5E3A] border-b-2 border-[#4A5E3A]' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`pb-3 text-sm font-semibold transition-colors ${activeView === 'challenges' ? 'text-[var(--primary)] border-b-2 border-[var(--primary)]' : 'text-gray-400 hover:text-gray-600'}`}>
             Patient Challenges
           </button>
         </div>
@@ -271,9 +271,9 @@ export default function DoctorDashboard() {
               {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map(f => (
                 <button key={f} onClick={() => setFilter(f)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all capitalize ${
-                    filter === f ? 'text-white' : 'text-gray-500 hover:bg-[#E8EDE0]'
+                    filter === f ? 'text-primary-inverse' : 'text-gray-500 hover:bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)]'
                   }`}
-                  style={filter === f ? { background: '#4A5E3A' } : {}}>
+                  style={filter === f ? { background: 'var(--primary)' } : {}}>
                   {f === 'all' ? `All (${appointments.length})` : `${f} (${appointments.filter(a => a.status === f).length})`}
                 </button>
               ))}
@@ -282,11 +282,11 @@ export default function DoctorDashboard() {
             {/* Appointments list */}
             {loading ? (
               <div className="flex justify-center py-16">
-                <Loader className="w-7 h-7 animate-spin" style={{ color: '#6B7F5E' }} />
+                <Loader className="w-7 h-7 animate-spin" style={{ color: 'var(--primary)' }} />
               </div>
             ) : filtered.length === 0 ? (
-              <div className="bg-white rounded-2xl border p-14 text-center" style={{ borderColor: '#E8EDE0' }}>
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-25" style={{ color: '#6B7F5E' }} />
+              <div className="bg-base-bg rounded-2xl border p-14 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-25" style={{ color: 'var(--primary)' }} />
                 <p className="text-gray-400 font-medium">No {filter !== 'all' ? filter : ''} appointments found.</p>
               </div>
             ) : (
@@ -296,17 +296,17 @@ export default function DoctorDashboard() {
                   const actions = STATUS_ACTIONS[a.status] || []
                   return (
                     <div key={a.id || i}
-                      className="bg-white rounded-2xl border p-5 flex flex-wrap items-center gap-4"
-                      style={{ borderColor: '#E8EDE0' }}>
+                      className="bg-base-bg rounded-2xl border p-5 flex flex-wrap items-center gap-4"
+                      style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                       {/* Patient avatar */}
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
-                        style={{ background: 'linear-gradient(135deg, #4A5E3A, #8A9E6C)' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-primary-inverse font-bold text-sm shrink-0"
+                        style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
                         {(a.user?.name || 'P').charAt(0).toUpperCase()}
                       </div>
 
                       {/* Patient info */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>
+                        <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>
                           {a.user?.name || 'Patient'}
                         </p>
                         <p className="text-xs text-gray-400">{a.user?.email}</p>
@@ -334,8 +334,8 @@ export default function DoctorDashboard() {
                               disabled={updatingId === a.id}
                               className="text-xs px-3 py-1.5 rounded-full border font-medium transition-colors hover:opacity-80 capitalize"
                               style={{
-                                borderColor: STATUS_COLORS[s]?.text || '#6B7F5E',
-                                color:       STATUS_COLORS[s]?.text || '#6B7F5E',
+                                borderColor: STATUS_COLORS[s]?.text || 'var(--primary)',
+                                color:       STATUS_COLORS[s]?.text || 'var(--primary)',
                               }}>
                               {updatingId === a.id ? '...' : `Mark ${s}`}
                             </button>
@@ -355,20 +355,20 @@ export default function DoctorDashboard() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold" style={{ color: '#2C3E1E' }}>Mental Health Challenges</h2>
+                <h2 className="text-lg font-bold" style={{ color: 'var(--base-text)' }}>Mental Health Challenges</h2>
                 <p className="text-sm text-gray-500">Create new tasks to engage your patients' daily routines.</p>
               </div>
               <button onClick={() => setShowAddChallenge(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:shadow-md transition-all"
-                style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-primary-inverse hover:shadow-md transition-all"
+                style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary))' }}>
                 <Plus className="w-4 h-4" /> Add Challenge
               </button>
             </div>
 
             {showAddChallenge && (
-              <div className="bg-white rounded-2xl border p-6" style={{ borderColor: '#D4DBC8' }}>
+              <div className="bg-base-bg rounded-2xl border p-6" style={{ borderColor: '#D4DBC8' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold" style={{ color: '#2C3E1E' }}>New Challenge</h3>
+                  <h3 className="font-bold" style={{ color: 'var(--base-text)' }}>New Challenge</h3>
                   <button onClick={() => setShowAddChallenge(false)} className="text-gray-400"><X className="w-4 h-4" /></button>
                 </div>
                 {challengeError && <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl px-4 py-2 mb-4">{challengeError}</div>}
@@ -378,25 +378,25 @@ export default function DoctorDashboard() {
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Title</label>
                     <input type="text" placeholder="e.g., 7 Days of Gratitude" required value={challengeForm.title}
                       onChange={e => setChallengeForm({ ...challengeForm, title: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Duration (days)</label>
                     <input type="number" placeholder="7" required min="1" max="90" value={challengeForm.duration}
                       onChange={e => setChallengeForm({ ...challengeForm, duration: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Description (General)</label>
                     <textarea rows="3" placeholder="Describe the overview..." required value={challengeForm.description}
                       onChange={e => setChallengeForm({ ...challengeForm, description: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm resize-none" />
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm resize-none" />
                   </div>
 
                   <div className="flex items-center gap-3 py-2 border-y border-gray-100">
                     <input type="checkbox" id="isRepetitive" checked={challengeForm.isRepetitive}
                       onChange={e => setChallengeForm({ ...challengeForm, isRepetitive: e.target.checked })} 
-                      className="w-4 h-4 accent-[#4A5E3A]" />
+                      className="w-4 h-4 accent-[var(--primary)]" />
                     <label htmlFor="isRepetitive" className="text-sm">Tasks are repetitive (same daily task)</label>
                   </div>
 
@@ -406,13 +406,13 @@ export default function DoctorDashboard() {
                       <input type="text" placeholder={`Task for day ${i + 1}`} required 
                         value={challengeForm.dailyTasks[i] || ''}
                         onChange={e => handleTaskChange(i, e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                     </div>
                   ))}
 
                   <div className="flex gap-3 pt-2 mt-4">
-                    <button type="submit" disabled={addingChallenge} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2"
-                      style={{ background: addingChallenge ? '#8A9E6C' : '#4A5E3A' }}>
+                    <button type="submit" disabled={addingChallenge} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-primary-inverse flex items-center gap-2"
+                      style={{ background: addingChallenge ? 'var(--secondary)' : 'var(--primary)' }}>
                       {addingChallenge ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                       {addingChallenge ? 'Creating...' : 'Create Challenge'}
                     </button>
@@ -423,24 +423,24 @@ export default function DoctorDashboard() {
             )}
 
             {loading ? (
-              <div className="flex justify-center py-16"><Loader className="w-7 h-7 animate-spin" style={{ color: '#6B7F5E' }} /></div>
+              <div className="flex justify-center py-16"><Loader className="w-7 h-7 animate-spin" style={{ color: 'var(--primary)' }} /></div>
             ) : challenges.length === 0 ? (
-              <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+              <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                 <p className="text-gray-400 text-sm">No challenges available.</p>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {challenges.map((c, i) => (
-                  <div key={c.id || c._id || i} className="bg-white rounded-2xl border p-5 group transition-shadow hover:shadow-sm" style={{ borderColor: '#E8EDE0' }}>
+                  <div key={c.id || c._id || i} className="bg-base-bg rounded-2xl border p-5 group transition-shadow hover:shadow-sm" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-bold" style={{ color: '#2C3E1E' }}>{c.title}</h4>
+                      <h4 className="font-bold" style={{ color: 'var(--base-text)' }}>{c.title}</h4>
                       <button onClick={() => handleDeleteChallenge(c.id || c._id)} disabled={deletingId === (c.id || c._id)}
                         className="text-red-400 hover:text-red-500 transition-colors bg-red-50 p-1.5 rounded-lg opacity-0 group-hover:opacity-100">
                         {deletingId === (c.id || c._id) ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#6B7F5E' }}>{c.duration} Days</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--primary)' }}>{c.duration} Days</p>
                     <p className="text-sm text-gray-500 line-clamp-2">{c.description}</p>
                     <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
                       <span>{(c._count?.progress) || c.participantsCount || 0} participants</span>

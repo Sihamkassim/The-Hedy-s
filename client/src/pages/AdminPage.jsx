@@ -21,28 +21,28 @@ const TABS = [
 const STATUS_COLORS = {
   pending:   { bg: '#FEF3C7', text: '#D97706' },
   paid:      { bg: '#DBEAFE', text: '#2563EB' },
-  confirmed: { bg: '#E8EDE0', text: '#4A5E3A' },
+  confirmed: { bg: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', text: 'var(--primary)' },
   completed: { bg: '#D1FAE5', text: '#065F46' },
   cancelled: { bg: '#FEE2E2', text: '#EF4444' },
 }
 
 const ROLE_COLORS = {
   patient: { bg: '#EDE9FE', text: '#6D28D9' },
-  doctor:  { bg: '#E8EDE0', text: '#4A5E3A' },
+  doctor:  { bg: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', text: 'var(--primary)' },
   spiritual_leader: { bg: '#E0F2FE', text: '#0369A1' },
   admin:   { bg: '#FEF3C7', text: '#D97706' },
 }
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
-    <div className="bg-white rounded-2xl border p-6" style={{ borderColor: '#E8EDE0' }}>
+    <div className="bg-base-bg rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
       <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#E8EDE0' }}>
-          <Icon className="w-5 h-5" style={{ color: color || '#4A5E3A' }} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+          <Icon className="w-5 h-5" style={{ color: color || 'var(--primary)' }} />
         </div>
         {sub && <span className="text-xs text-gray-400">{sub}</span>}
       </div>
-      <div className="text-3xl font-bold mb-1" style={{ color: '#2C3E1E' }}>{value ?? 'â€”'}</div>
+      <div className="text-3xl font-bold mb-1" style={{ color: 'var(--base-text)' }}>{value ?? 'â€”'}</div>
       <div className="text-sm text-gray-500">{label}</div>
     </div>
   )
@@ -232,16 +232,16 @@ export default function AdminPage() {
   const visibleTabs = TABS.filter(t => !t.adminOnly || user?.role === 'admin')
 
   return (
-    <div className="min-h-screen" style={{ background: '#F7F4EF' }}>
+    <div className="min-h-screen" style={{ background: 'var(--base-bg)' }}>
       {/* Header */}
-      <div className="py-10 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+      <div className="py-10 px-4" style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
         <div className="max-w-6xl mx-auto flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
-            <ShieldCheck className="w-6 h-6 text-white" />
+            <ShieldCheck className="w-6 h-6 text-primary-inverse" />
           </div>
           <div>
-            <p className="text-white/60 text-sm capitalize">{user?.role} Panel</p>
-            <h1 className="text-2xl font-bold text-white">Management Dashboard</h1>
+            <p className="text-primary-inverse opacity-60 text-sm capitalize">{user?.role} Panel</p>
+            <h1 className="text-2xl font-bold text-primary-inverse">Management Dashboard</h1>
           </div>
         </div>
       </div>
@@ -251,8 +251,8 @@ export default function AdminPage() {
         <div className="flex gap-1 mb-8 border-b overflow-x-auto" style={{ borderColor: '#D4DBC8' }}>
           {visibleTabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                tab === t.id ? 'border-[#4A5E3A] text-[#2C3E1E]' : 'border-transparent text-gray-400 hover:text-gray-600'
+              className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px var(--base-bg)space-nowrap ${
+                tab === t.id ? 'border-[var(--primary)] text-[var(--base-text)]' : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}>
               <t.icon className="w-4 h-4" />{t.label}
             </button>
@@ -261,7 +261,7 @@ export default function AdminPage() {
 
         {loading ? (
           <div className="flex justify-center py-24">
-            <Loader className="w-7 h-7 animate-spin" style={{ color: '#6B7F5E' }} />
+            <Loader className="w-7 h-7 animate-spin" style={{ color: 'var(--primary)' }} />
           </div>
         ) : (
           <>
@@ -271,27 +271,27 @@ export default function AdminPage() {
                 <div>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Users</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <StatCard icon={Users}     label="Total Users"  value={stats.users?.total}    color="#4A5E3A" />
-                    <StatCard icon={Users}     label="Patients"     value={stats.users?.patients} color="#6B7F5E" />
-                    <StatCard icon={UserCheck} label="Doctors"      value={stats.users?.doctors}  color="#8A9E6C" />
+                    <StatCard icon={Users}     label="Total Users"  value={stats.users?.total}    color="var(--primary)" />
+                    <StatCard icon={Users}     label="Patients"     value={stats.users?.patients} color="var(--primary)" />
+                    <StatCard icon={UserCheck} label="Doctors"      value={stats.users?.doctors}  color="var(--secondary)" />
                   </div>
                 </div>
                 <div>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Appointments</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <StatCard icon={Calendar}    label="Total"     value={stats.appointments?.total}     color="#4A5E3A" />
+                    <StatCard icon={Calendar}    label="Total"     value={stats.appointments?.total}     color="var(--primary)" />
                     <StatCard icon={Calendar}    label="Pending"   value={stats.appointments?.pending}   color="#D97706" />
-                    <StatCard icon={CheckCircle} label="Confirmed" value={stats.appointments?.confirmed} color="#4A5E3A" />
+                    <StatCard icon={CheckCircle} label="Confirmed" value={stats.appointments?.confirmed} color="var(--primary)" />
                     <StatCard icon={CheckCircle} label="Completed" value={stats.appointments?.completed} color="#065F46" />
                   </div>
                 </div>
                 <div>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Platform</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <StatCard icon={UserCheck}  label="Therapists"        value={stats.therapists}             color="#4A5E3A" />
-                    <StatCard icon={BookOpen}   label="Challenges"        value={stats.challenges?.total}      color="#6B7F5E" />
-                    <StatCard icon={TrendingUp} label="Challenge Joins"   value={stats.challenges?.totalJoins} color="#8A9E6C" />
-                    <StatCard icon={Phone}      label="Support Resources" value={stats.resources}              color="#C17A55" />
+                    <StatCard icon={UserCheck}  label="Therapists"        value={stats.therapists}             color="var(--primary)" />
+                    <StatCard icon={BookOpen}   label="Challenges"        value={stats.challenges?.total}      color="var(--primary)" />
+                    <StatCard icon={TrendingUp} label="Challenge Joins"   value={stats.challenges?.totalJoins} color="var(--secondary)" />
+                    <StatCard icon={Phone}      label="Support Resources" value={stats.resources}              color="var(--accent)" />
                   </div>
                 </div>
               </div>
@@ -302,8 +302,8 @@ export default function AdminPage() {
               <div>
                 <p className="text-sm text-gray-400 mb-4">{users.length} registered users</p>
                 {users.length === 0 ? (
-                  <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                    <Users className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+                  <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                    <Users className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                     <p className="text-gray-400 text-sm">No users yet.</p>
                   </div>
                 ) : (
@@ -311,13 +311,13 @@ export default function AdminPage() {
                     {users.map((u, i) => {
                       const rc = ROLE_COLORS[u.role] || ROLE_COLORS.patient
                       return (
-                        <div key={u.id || i} className="bg-white rounded-2xl border p-5 flex flex-wrap items-center gap-4" style={{ borderColor: '#E8EDE0' }}>
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
-                            style={{ background: 'linear-gradient(135deg, #4A5E3A, #8A9E6C)' }}>
+                        <div key={u.id || i} className="bg-base-bg rounded-2xl border p-5 flex flex-wrap items-center gap-4" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-primary-inverse font-bold text-sm shrink-0"
+                            style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
                             {u.name?.charAt(0)?.toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>{u.name}</p>
+                            <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>{u.name}</p>
                             <p className="text-xs text-gray-400">{u.email}</p>
                             <div className="flex gap-3 mt-1 text-xs text-gray-400">
                               <span>{u._count?.appointments || 0} appts</span>
@@ -331,7 +331,7 @@ export default function AdminPage() {
                                 <button key={r} onClick={() => handleRoleUpdate(u.id, r)}
                                   disabled={updatingId === u.id}
                                   className="text-xs px-3 py-1.5 rounded-full border font-semibold capitalize transition"
-                                  style={{ borderColor: ROLE_COLORS[r]?.text, color: ROLE_COLORS[r]?.text, background: u.role === r ? ROLE_COLORS[r]?.bg : 'white' }}>
+                                  style={{ borderColor: ROLE_COLORS[r]?.text, color: ROLE_COLORS[r]?.text, background: u.role === r ? ROLE_COLORS[r]?.bg : 'var(--base-bg)' }}>
                                   {updatingId === u.id ? '...' : r}
                                 </button>
                               ))}
@@ -344,7 +344,7 @@ export default function AdminPage() {
                               <span className="text-xs font-semibold px-3 py-1 rounded-full capitalize" style={{ background: rc.bg, color: rc.text }}>{u.role}</span>
                               {u.id !== user?.id && (
                                 <button onClick={() => setEditingRole(u.id)}
-                                  className="p-1.5 rounded-lg text-gray-400 hover:text-[#4A5E3A] hover:bg-[#E8EDE0] transition-colors">
+                                  className="p-1.5 rounded-lg text-gray-400 hover:text-[var(--primary)] hover:bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)] transition-colors">
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
                               )}
@@ -369,8 +369,8 @@ export default function AdminPage() {
               <div>
                 <p className="text-sm text-gray-400 mb-4">{appointments.length} total appointments</p>
                 {appointments.length === 0 ? (
-                  <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                    <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+                  <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                    <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                     <p className="text-gray-400 text-sm">No appointments found.</p>
                   </div>
                 ) : (
@@ -378,9 +378,9 @@ export default function AdminPage() {
                     {appointments.map((a, i) => {
                       const sc = STATUS_COLORS[a.status] || STATUS_COLORS.pending
                       return (
-                        <div key={a.id || i} className="bg-white rounded-2xl border p-5 flex flex-wrap items-center gap-4" style={{ borderColor: '#E8EDE0' }}>
+                        <div key={a.id || i} className="bg-base-bg rounded-2xl border p-5 flex flex-wrap items-center gap-4" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>
+                            <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>
                               {a.user?.name || 'Patient'}
                               <span className="font-normal text-gray-400"> â†’ </span>
                               {a.therapist?.name || 'Therapist'}
@@ -414,15 +414,15 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-gray-400">{therapists.length} therapists</p>
                   <button onClick={() => setShowAddTherapist(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:shadow-md transition-all"
-                    style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-primary-inverse hover:shadow-md transition-all"
+                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary))' }}>
                     <Plus className="w-4 h-4" /> Add Therapist
                   </button>
                 </div>
                 {showAddTherapist && (
-                  <div className="bg-white rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
+                  <div className="bg-base-bg rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold" style={{ color: '#2C3E1E' }}>New Therapist</h3>
+                      <h3 className="font-bold" style={{ color: 'var(--base-text)' }}>New Therapist</h3>
                       <button onClick={() => setShowAddTherapist(false)} className="text-gray-400"><X className="w-4 h-4" /></button>
                     </div>
                     {therapistError && <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl px-4 py-2 mb-4">{therapistError}</div>}
@@ -438,23 +438,23 @@ export default function AdminPage() {
                           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{f.label}</label>
                           <input type={f.type} placeholder={f.placeholder} required value={therapistForm[f.key]}
                             onChange={e => setTherapistForm({ ...therapistForm, [f.key]: e.target.value })}
-                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                         </div>
                       ))}
                       <div className="md:col-span-2">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Bio</label>
                         <textarea rows={2} value={therapistForm.bio}
                           onChange={e => setTherapistForm({ ...therapistForm, bio: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm resize-none" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm resize-none" />
                       </div>
                       <div className="md:col-span-2 flex items-center gap-3">
                         <input type="checkbox" id="isFree" checked={therapistForm.isFreeSupport}
-                          onChange={e => setTherapistForm({ ...therapistForm, isFreeSupport: e.target.checked })} className="w-4 h-4 accent-[#4A5E3A]" />
+                          onChange={e => setTherapistForm({ ...therapistForm, isFreeSupport: e.target.checked })} className="w-4 h-4 accent-[var(--primary)]" />
                         <label htmlFor="isFree" className="text-sm text-gray-600">Offers free support tier</label>
                       </div>
                       <div className="md:col-span-2 flex gap-3 pt-2">
-                        <button type="submit" disabled={addingTherapist} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2"
-                          style={{ background: addingTherapist ? '#8A9E6C' : '#4A5E3A' }}>
+                        <button type="submit" disabled={addingTherapist} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-primary-inverse flex items-center gap-2"
+                          style={{ background: addingTherapist ? 'var(--secondary)' : 'var(--primary)' }}>
                           {addingTherapist ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                           {addingTherapist ? 'Creating...' : 'Create Therapist'}
                         </button>
@@ -464,24 +464,24 @@ export default function AdminPage() {
                   </div>
                 )}
                 {therapists.length === 0 ? (
-                  <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                    <UserCheck className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+                  <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                    <UserCheck className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                     <p className="text-gray-400 text-sm">No therapists yet.</p>
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-4">
                     {therapists.map((t, i) => (
-                      <div key={t.id || t._id || i} className="bg-white rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: '#E8EDE0' }}>
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
-                          style={{ background: 'linear-gradient(135deg, #4A5E3A, #8A9E6C)' }}>
+                      <div key={t.id || t._id || i} className="bg-base-bg rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-primary-inverse font-bold text-sm shrink-0"
+                          style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
                           {t.name?.charAt(0)?.toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>{t.name}</p>
+                          <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>{t.name}</p>
                           <p className="text-xs text-gray-400">{t.specialization} Â· {t.experience}yr</p>
                           <p className="text-xs text-gray-400">{t.email}</p>
                           <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{ background: (t.sessionPrice === 0 || t.isFreeSupport) ? '#E8EDE0' : '#FEF3C7', color: (t.sessionPrice === 0 || t.isFreeSupport) ? '#4A5E3A' : '#D97706' }}>
+                            style={{ background: (t.sessionPrice === 0 || t.isFreeSupport) ? 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' : '#FEF3C7', color: (t.sessionPrice === 0 || t.isFreeSupport) ? 'var(--primary)' : '#D97706' }}>
                             {(t.sessionPrice === 0 || t.isFreeSupport) ? 'Free' : `$${t.sessionPrice}/session`}
                           </span>
                         </div>
@@ -517,15 +517,15 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-gray-400">{challenges.length} challenges</p>
                   <button onClick={() => setShowAddChallenge(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:shadow-md transition-all"
-                    style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-primary-inverse hover:shadow-md transition-all"
+                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary))' }}>
                     <Plus className="w-4 h-4" /> Add Challenge
                   </button>
                 </div>
                 {showAddChallenge && (
-                  <div className="bg-white rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
+                  <div className="bg-base-bg rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold" style={{ color: '#2C3E1E' }}>New Challenge</h3>
+                      <h3 className="font-bold" style={{ color: 'var(--base-text)' }}>New Challenge</h3>
                       <button onClick={() => setShowAddChallenge(false)} className="text-gray-400"><X className="w-4 h-4" /></button>
                     </div>
                     {challengeError && <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl px-4 py-2 mb-4">{challengeError}</div>}
@@ -534,23 +534,23 @@ export default function AdminPage() {
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Title</label>
                         <input type="text" placeholder="30-Day Mindfulness" required value={challengeForm.title}
                           onChange={e => setChallengeForm({ ...challengeForm, title: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Duration (days)</label>
                         <input type="number" placeholder="30" required value={challengeForm.duration}
                           onChange={e => setChallengeForm({ ...challengeForm, duration: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Description</label>
                         <textarea rows={2} required value={challengeForm.description}
                           onChange={e => setChallengeForm({ ...challengeForm, description: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm resize-none" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm resize-none" />
                       </div>
                       <div className="md:col-span-2 flex gap-3 pt-2">
-                        <button type="submit" disabled={addingChallenge} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2"
-                          style={{ background: addingChallenge ? '#8A9E6C' : '#4A5E3A' }}>
+                        <button type="submit" disabled={addingChallenge} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-primary-inverse flex items-center gap-2"
+                          style={{ background: addingChallenge ? 'var(--secondary)' : 'var(--primary)' }}>
                           {addingChallenge ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                           {addingChallenge ? 'Creating...' : 'Create Challenge'}
                         </button>
@@ -560,22 +560,22 @@ export default function AdminPage() {
                   </div>
                 )}
                 {challenges.length === 0 ? (
-                  <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                    <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+                  <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                    <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                     <p className="text-gray-400 text-sm">No challenges yet.</p>
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-4">
                     {challenges.map((c, i) => (
-                      <div key={c.id || c._id || i} className="bg-white rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: '#E8EDE0' }}>
+                      <div key={c.id || c._id || i} className="bg-base-bg rounded-2xl border p-5 flex items-start gap-4" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                          style={{ background: 'linear-gradient(135deg, #E8EDE0, #D4DBC8)' }}>
-                          <BookOpen className="w-4 h-4" style={{ color: '#4A5E3A' }} />
+                          style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%), #D4DBC8)' }}>
+                          <BookOpen className="w-4 h-4" style={{ color: 'var(--primary)' }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>{c.title}</p>
+                          <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>{c.title}</p>
                           <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{c.description}</p>
-                          <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#E8EDE0', color: '#4A5E3A' }}>{c.duration} days</span>
+                          <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', color: 'var(--primary)' }}>{c.duration} days</span>
                         </div>
                         <button onClick={() => handleDeleteChallenge(c.id || c._id)} disabled={deletingId === (c.id || c._id)}
                           className="p-2 rounded-xl text-red-400 hover:bg-red-50 transition-colors shrink-0">
@@ -594,15 +594,15 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-gray-400">{resources.length} resources</p>
                   <button onClick={() => setShowAddResource(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:shadow-md transition-all"
-                    style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-primary-inverse hover:shadow-md transition-all"
+                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary))' }}>
                     <Plus className="w-4 h-4" /> Add Resource
                   </button>
                 </div>
                 {showAddResource && (
-                  <div className="bg-white rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
+                  <div className="bg-base-bg rounded-2xl border p-6 mb-6" style={{ borderColor: '#D4DBC8' }}>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold" style={{ color: '#2C3E1E' }}>New Support Resource</h3>
+                      <h3 className="font-bold" style={{ color: 'var(--base-text)' }}>New Support Resource</h3>
                       <button onClick={() => setShowAddResource(false)} className="text-gray-400"><X className="w-4 h-4" /></button>
                     </div>
                     {resourceError && <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl px-4 py-2 mb-4">{resourceError}</div>}
@@ -611,24 +611,24 @@ export default function AdminPage() {
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Name</label>
                         <input type="text" placeholder="Crisis Text Line" required value={resourceForm.name}
                           onChange={e => setResourceForm({ ...resourceForm, name: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Contact</label>
                         <input type="text" placeholder="Text HOME to 741741" required value={resourceForm.phone}
                           onChange={e => setResourceForm({ ...resourceForm, phone: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm" />
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm" />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Category</label>
                         <select value={resourceForm.category} onChange={e => setResourceForm({ ...resourceForm, category: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6B7F5E] outline-none text-sm bg-white">
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[var(--primary)] outline-none text-sm bg-base-bg">
                           {['Crisis', 'Safety', 'Substance', 'Eating', 'General'].map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                       </div>
                       <div className="md:col-span-2 flex gap-3 pt-2">
-                        <button type="submit" disabled={addingResource} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white flex items-center gap-2"
-                          style={{ background: addingResource ? '#8A9E6C' : '#4A5E3A' }}>
+                        <button type="submit" disabled={addingResource} className="px-6 py-2.5 rounded-xl text-sm font-semibold text-primary-inverse flex items-center gap-2"
+                          style={{ background: addingResource ? 'var(--secondary)' : 'var(--primary)' }}>
                           {addingResource ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                           {addingResource ? 'Creating...' : 'Create Resource'}
                         </button>
@@ -638,21 +638,21 @@ export default function AdminPage() {
                   </div>
                 )}
                 {resources.length === 0 ? (
-                  <div className="bg-white rounded-2xl border p-12 text-center" style={{ borderColor: '#E8EDE0' }}>
-                    <Phone className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#6B7F5E' }} />
+                  <div className="bg-base-bg rounded-2xl border p-12 text-center" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                    <Phone className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: 'var(--primary)' }} />
                     <p className="text-gray-400 text-sm">No resources yet.</p>
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-4">
                     {resources.map((r, i) => (
-                      <div key={r.id || r._id || i} className="bg-white rounded-2xl border p-5 flex items-center gap-4" style={{ borderColor: '#E8EDE0' }}>
+                      <div key={r.id || r._id || i} className="bg-base-bg rounded-2xl border p-5 flex items-center gap-4" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#FEE2E2' }}>
                           <Phone className="w-4 h-4" style={{ color: '#EF4444' }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm" style={{ color: '#2C3E1E' }}>{r.name}</p>
+                          <p className="font-semibold text-sm" style={{ color: 'var(--base-text)' }}>{r.name}</p>
                           <p className="text-xs text-gray-400">{r.phone}</p>
-                          <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#E8EDE0', color: '#4A5E3A' }}>{r.category}</span>
+                          <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', color: 'var(--primary)' }}>{r.category}</span>
                         </div>
                         <button onClick={() => handleDeleteResource(r.id || r._id)} disabled={deletingId === (r.id || r._id)}
                           className="p-2 rounded-xl text-red-400 hover:bg-red-50 transition-colors shrink-0">
@@ -669,17 +669,17 @@ export default function AdminPage() {
             {tab === 'knowledge' && (
               <div>
                 <div className="mb-6">
-                  <h2 className="text-xl font-bold" style={{ color: '#2C3E1E' }}>AI Knowledge Base</h2>
+                  <h2 className="text-xl font-bold" style={{ color: 'var(--base-text)' }}>AI Knowledge Base</h2>
                   <p className="text-sm text-gray-500 mt-1">
                     Upload documents (PDF, DOCX, TXT, PPT) to enhance the AI Assistant's medical knowledge via Retrieval-Augmented Generation.
                   </p>
                 </div>
 
-                <div className="bg-white rounded-2xl border p-8 max-w-2xl" style={{ borderColor: '#E8EDE0' }}>
+                <div className="bg-base-bg rounded-2xl border p-8 max-w-2xl" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                   <form onSubmit={handleDocumentUpload} className="space-y-6">
                     
                     <div className="border-2 border-dashed rounded-2xl p-8 text-center transition-colors hover:bg-gray-50"
-                      style={{ borderColor: documentFile ? '#6B7F5E' : '#E5E7EB' }}>
+                      style={{ borderColor: documentFile ? 'var(--primary)' : '#E5E7EB' }}>
                       <input 
                         type="file" 
                         id="rag-document" 
@@ -688,8 +688,8 @@ export default function AdminPage() {
                         onChange={(e) => setDocumentFile(e.target.files[0])}
                       />
                       <label htmlFor="rag-document" className="cursor-pointer flex flex-col items-center justify-center">
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: '#F7F4EF' }}>
-                          <UploadCloud className="w-8 h-8" style={{ color: '#4A5E3A' }} />
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--base-bg)' }}>
+                          <UploadCloud className="w-8 h-8" style={{ color: 'var(--primary)' }} />
                         </div>
                         <span className="font-semibold text-gray-700">
                           {documentFile ? documentFile.name : 'Click to browse files'}
@@ -701,7 +701,7 @@ export default function AdminPage() {
                     </div>
 
                     {uploadMessage.text && (
-                      <div className={`px-4 py-3 rounded-xl text-sm font-medium ${uploadMessage.type === 'success' ? 'bg-[#E8EDE0] text-[#4A5E3A]' : 'bg-red-50 text-red-600'}`}>
+                      <div className={`px-4 py-3 rounded-xl text-sm font-medium ${uploadMessage.type === 'success' ? 'bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)] text-[var(--primary)]' : 'bg-red-50 text-red-600'}`}>
                         {uploadMessage.text}
                       </div>
                     )}
@@ -710,8 +710,8 @@ export default function AdminPage() {
                       <button 
                         type="submit" 
                         disabled={!documentFile || uploadingDoc}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
-                        style={{ background: '#4A5E3A' }}>
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-primary-inverse transition-opacity disabled:opacity-50"
+                        style={{ background: 'var(--primary)' }}>
                         {uploadingDoc ? (
                           <><Loader className="w-5 h-5 animate-spin" /> Processing & Embedding...</>
                         ) : (
@@ -722,11 +722,11 @@ export default function AdminPage() {
                   </form>
                 </div>
 
-                <div className="mt-8 bg-[#F8FAF5] rounded-2xl p-6 border" style={{ borderColor: '#E8EDE0' }}>
+                <div className="mt-8 bg-[#F8FAF5] rounded-2xl p-6 border" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
                   <div className="flex items-start gap-4">
-                    <FileText className="w-6 h-6 mt-1" style={{ color: '#6B7F5E' }} />
+                    <FileText className="w-6 h-6 mt-1" style={{ color: 'var(--primary)' }} />
                     <div>
-                      <h4 className="font-semibold" style={{ color: '#2C3E1E' }}>How it works</h4>
+                      <h4 className="font-semibold" style={{ color: 'var(--base-text)' }}>How it works</h4>
                       <p className="text-sm text-gray-600 mt-2 leading-relaxed">
                         When you upload a document here, our system automatically parses the text from the file, splits it into semantically meaningful chunks, and vectorizes these chunks using Voyage AI embeddings.
                         Finally, they are stored securely in the PostgreSQL vector database. The <span className="font-semibold">Gemini 2.5 Flash</span> medical AI will automatically query this database to fetch relevant psychiatric context before responding to users!

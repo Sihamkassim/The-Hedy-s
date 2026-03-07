@@ -50,18 +50,18 @@ export default function AIAssistantPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F7F4EF' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--base-bg)' }}>
       {/* Hero */}
-      <div className="py-10 px-4" style={{ background: 'linear-gradient(135deg, #2C3E1E, #4A5E3A)' }}>
+      <div className="py-10 px-4" style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
         <div className="max-w-3xl mx-auto text-center">
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-4"
-            style={{ background: 'rgba(255,255,255,0.12)', color: '#A3C17A' }}
+            style={{ background: 'rgba(255,255,255,0.12)', color: 'var(--accent)' }}
           >
             <Sparkles className="w-4 h-4" /> AI Mental Health Support
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3">Your AI Companion</h1>
-          <p className="text-white/:70 text-lg max-w-xl mx-auto">
+          <h1 className="text-4xl font-bold text-primary-inverse mb-3">Your AI Companion</h1>
+          <p className="text-primary-inverse/:70 text-lg max-w-xl mx-auto">
             A safe space to share your thoughts and feelings. Always here, always listening.
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function AIAssistantPage() {
       )}
 
       <div className="flex-1 max-w-3xl w-full mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl shadow-sm border h-full flex flex-col" style={{ borderColor: '#E8EDE0' }}>
+        <div className="bg-base-bg rounded-3xl shadow-sm border h-full flex flex-col" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((m, i) => (
@@ -88,17 +88,17 @@ export default function AIAssistantPage() {
                 {m.role === 'ai' && (
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
-                    style={{ background: '#E8EDE0' }}
+                    style={{ background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}
                   >
-                    <Heart className="w-4 h-4" style={{ color: '#4A5E3A' }} />
+                    <Heart className="w-4 h-4" style={{ color: 'var(--primary)' }} />
                   </div>
                 )}
                 <div
-                  className="max-w-md px-5 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap"
+                  className="max-w-md px-5 py-3 rounded-2xl text-sm leading-relaxed var(--base-bg)space-pre-wrap"
                   style={
                     m.role === 'user'
-                      ? { background: '#4A5E3A', color: '#fff', borderBottomRightRadius: 4 }
-                      : { background: '#E8EDE0', color: '#2C3E1E', borderBottomLeftRadius: 4 }
+                      ? { background: 'var(--primary)', color: '#fff', borderBottomRightRadius: 4 }
+                      : { background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)', color: 'var(--base-text)', borderBottomLeftRadius: 4 }
                   }
                 >
                   <ReactMarkdown
@@ -118,8 +118,8 @@ export default function AIAssistantPage() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="px-5 py-3 rounded-2xl" style={{ background: '#E8EDE0' }}>
-                  <Loader className="w-4 h-4 animate-spin" style={{ color: '#6B7F5E' }} />
+                <div className="px-5 py-3 rounded-2xl" style={{ background: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
+                  <Loader className="w-4 h-4 animate-spin" style={{ color: 'var(--primary)' }} />
                 </div>
               </div>
             )}
@@ -127,8 +127,8 @@ export default function AIAssistantPage() {
               <div className="text-center py-6">
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="px-6 py-2.5 rounded-full text-sm font-semibold text-white"
-                  style={{ background: '#4A5E3A' }}
+                  className="px-6 py-2.5 rounded-full text-sm font-semibold text-primary-inverse"
+                  style={{ background: 'var(--primary)' }}
                 >
                   Sign in to continue chatting
                 </button>
@@ -137,25 +137,25 @@ export default function AIAssistantPage() {
           </div>
 
           {/* Input */}
-          <div className="px-6 py-4 border-t flex items-center gap-3" style={{ borderColor: '#E8EDE0' }}>
+          <div className="px-6 py-4 border-t flex items-center gap-3" style={{ borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}>
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               placeholder={isAuthenticated ? "Share how you're feeling…" : 'Sign in to chat with the AI…'}
               className="flex-1 px-4 py-3 rounded-full outline-none border text-sm"
-              style={{ background: '#F7F4EF', borderColor: '#E8EDE0' }}
+              style={{ background: 'var(--base-bg)', borderColor: 'color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)' }}
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-40"
-              style={{ background: '#4A5E3A' }}
+              style={{ background: 'var(--primary)' }}
             >
               {loading ? (
-                <Loader className="w-4 h-4 animate-spin text-white" />
+                <Loader className="w-4 h-4 animate-spin text-primary-inverse" />
               ) : (
-                <SendHorizonal className="w-4 h-4 text-white" />
+                <SendHorizonal className="w-4 h-4 text-primary-inverse" />
               )}
             </button>
           </div>
@@ -164,7 +164,7 @@ export default function AIAssistantPage() {
 
       {/* Bottom reassurance */}
       <div className="text-center py-8 px-4">
-        <Leaf className="w-6 h-6 mx-auto mb-2 opacity-30" style={{ color: '#4A5E3A' }} />
+        <Leaf className="w-6 h-6 mx-auto mb-2 opacity-30" style={{ color: 'var(--primary)' }} />
         <p className="text-xs text-gray-400 max-w-md mx-auto">
           This AI is trained on mental wellness principles but is not a substitute for professional therapy. If you're in crisis, call 988.
         </p>

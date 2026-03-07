@@ -121,19 +121,19 @@ export default function AuthModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto"
       style={{ background: 'rgba(44,62,30,0.5)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden my-8">
+      <div className="w-full max-w-lg bg-base-bg rounded-3xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="relative px-8 pt-8 pb-6"
-          style={{ background: 'linear-gradient(135deg, #4A5E3A 0%, #6B7F5E 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%)' }}>
           <button onClick={onClose}
-            className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+            className="absolute top-4 right-4 text-primary-inverse opacity-70 hover:text-primary-inverse transition-colors">
             <X className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-3 mb-1">
-            <Leaf className="w-7 h-7 text-white" />
-            <span className="text-white font-bold text-xl">Tsinat</span>
+            <Leaf className="w-7 h-7 text-primary-inverse" />
+            <span className="text-primary-inverse font-bold text-xl">Tsinat</span>
           </div>
-          <p className="text-white/80 text-sm">
+          <p className="text-primary-inverse opacity-80 text-sm">
             {mode === 'login' ? 'Welcome back. Your safe space awaits.' : 'Begin your healing journey today.'}
           </p>
         </div>
@@ -141,11 +141,11 @@ export default function AuthModal({ onClose }) {
         {/* Tabs */}
         <div className="flex border-b border-gray-100">
           <button onClick={() => switchMode('login')}
-            className={`flex-1 py-3 text-sm font-semibold transition-colors ${mode === 'login' ? 'text-[#4A5E3A] border-b-2 border-[#4A5E3A]' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`flex-1 py-3 text-sm font-semibold transition-colors ${mode === 'login' ? 'text-[var(--primary)] border-b-2 border-[var(--primary)]' : 'text-gray-400 hover:text-gray-600'}`}>
             Sign In
           </button>
           <button onClick={() => switchMode('register')}
-            className={`flex-1 py-3 text-sm font-semibold transition-colors ${mode === 'register' ? 'text-[#4A5E3A] border-b-2 border-[#4A5E3A]' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`flex-1 py-3 text-sm font-semibold transition-colors ${mode === 'register' ? 'text-[var(--primary)] border-b-2 border-[var(--primary)]' : 'text-gray-400 hover:text-gray-600'}`}>
             Create Account
           </button>
         </div>
@@ -158,7 +158,7 @@ export default function AuthModal({ onClose }) {
               <button type="button" onClick={() => switchUserType('user')}
                 className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold transition-all ${
                   userType === 'user'
-                    ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
+                    ? 'border-[var(--primary)] bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)] text-[var(--base-text)]'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}>
                 <User className="w-5 h-5 mb-1" />
@@ -167,7 +167,7 @@ export default function AuthModal({ onClose }) {
               <button type="button" onClick={() => switchUserType('therapist')}
                 className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold transition-all ${
                   userType === 'therapist'
-                    ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
+                    ? 'border-[var(--primary)] bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)] text-[var(--base-text)]'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}>
                 <Stethoscope className="w-5 h-5 mb-1" />
@@ -176,7 +176,7 @@ export default function AuthModal({ onClose }) {
               <button type="button" onClick={() => switchUserType('spiritual')}
                 className={`flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-xl border-2 text-[11px] font-bold text-center transition-all ${
                   userType === 'spiritual'
-                    ? 'border-[#4A5E3A] bg-[#E8EDE0] text-[#2C3E1E]'
+                    ? 'border-[var(--primary)] bg-[color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)] text-[var(--base-text)]'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}>
                 <Bird className="w-5 h-5 mb-1" />
@@ -200,7 +200,7 @@ export default function AuthModal({ onClose }) {
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
               <input type="text" placeholder="Your full name" required value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
             </div>
           )}
 
@@ -208,7 +208,7 @@ export default function AuthModal({ onClose }) {
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
             <input type="email" placeholder="you@example.com" required value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
           </div>
 
           <div>
@@ -216,7 +216,7 @@ export default function AuthModal({ onClose }) {
             <div className="relative">
               <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" required
                 value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
               <button type="button" onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -233,7 +233,7 @@ export default function AuthModal({ onClose }) {
                     <FileText className="w-3 h-3" /> Degree (PDF/Doc)
                   </label>
                   <label className="block w-full cursor-pointer">
-                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[#6B7F5E] text-sm text-gray-500 hover:text-[#4A5E3A] transition-all text-center truncate">
+                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[var(--primary)] text-sm text-gray-500 hover:text-[var(--primary)] transition-all text-center truncate">
                       {degreeFile ? degreeFile.name : 'Upload Degree…'}
                     </div>
                     <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => setDegreeFile(e.target.files?.[0])} className="hidden" />
@@ -244,7 +244,7 @@ export default function AuthModal({ onClose }) {
                     <Award className="w-3 h-3" /> Certificate
                   </label>
                   <label className="block w-full cursor-pointer">
-                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[#6B7F5E] text-sm text-gray-500 hover:text-[#4A5E3A] transition-all text-center truncate">
+                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[var(--primary)] text-sm text-gray-500 hover:text-[var(--primary)] transition-all text-center truncate">
                       {certificateFile ? certificateFile.name : 'Upload License…'}
                     </div>
                     <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => setCertificateFile(e.target.files?.[0])} className="hidden" />
@@ -258,7 +258,7 @@ export default function AuthModal({ onClose }) {
                 </label>
                 <input type="text" placeholder="Anxiety, Depression, Trauma..." required value={form.specialization}
                   onChange={e => setForm({ ...form, specialization: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -266,13 +266,13 @@ export default function AuthModal({ onClose }) {
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Years Experience</label>
                   <input type="number" placeholder="e.g., 5" required value={form.experience}
                     onChange={e => setForm({ ...form, experience: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Session Price ($)</label>
                   <input type="number" placeholder="0 for free" value={form.sessionPrice}
                     onChange={e => setForm({ ...form, sessionPrice: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
                 </div>
               </div>
 
@@ -280,7 +280,7 @@ export default function AuthModal({ onClose }) {
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>
                 <textarea rows={3} placeholder="Brief bio about your practice and approach..." value={form.bio}
                   onChange={e => setForm({ ...form, bio: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm resize-none transition-all" />
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm resize-none transition-all" />
               </div>
 
               <div>
@@ -292,7 +292,7 @@ export default function AuthModal({ onClose }) {
                     <img src={imagePreview} alt="Preview" className="w-16 h-16 rounded-xl object-cover border border-gray-200" />
                   )}
                   <label className="flex-1 cursor-pointer">
-                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[#6B7F5E] text-sm text-gray-500 hover:text-[#4A5E3A] transition-all text-center">
+                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[var(--primary)] text-sm text-gray-500 hover:text-[var(--primary)] transition-all text-center">
                       {profileImage ? profileImage.name : 'Choose an image…'}
                     </div>
                     <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
@@ -311,7 +311,7 @@ export default function AuthModal({ onClose }) {
                 </label>
                 <input type="text" placeholder="e.g., Ethiopian Orthodox, Islam..." required value={form.religion}
                   onChange={e => setForm({ ...form, religion: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
               </div>
               
               <div>
@@ -320,7 +320,7 @@ export default function AuthModal({ onClose }) {
                 </label>
                 <input type="text" placeholder="Family Counseling, Youth Empowerment..." required value={form.specialization}
                   onChange={e => setForm({ ...form, specialization: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -328,13 +328,13 @@ export default function AuthModal({ onClose }) {
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Years Experience</label>
                   <input type="number" placeholder="e.g., 5" required value={form.experience}
                     onChange={e => setForm({ ...form, experience: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Session Price (ETB)</label>
                   <input type="number" placeholder="0 for free" value={form.sessionPrice}
                     onChange={e => setForm({ ...form, sessionPrice: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all" />
                 </div>
               </div>
 
@@ -342,21 +342,21 @@ export default function AuthModal({ onClose }) {
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>
                 <textarea placeholder="Tell us about your background and how you guide others..." rows={3} value={form.bio}
                   onChange={e => setForm({ ...form, bio: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all resize-none" />
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 outline-none text-sm transition-all resize-none" />
               </div>
             </>
           )}
 
           <button type="submit" disabled={loading}
-            className="w-full py-3.5 rounded-xl font-semibold text-white text-sm flex items-center justify-center gap-2 transition-all"
-            style={{ background: loading ? '#8A9E6C' : 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}>
+            className="w-full py-3.5 rounded-xl font-semibold text-primary-inverse text-sm flex items-center justify-center gap-2 transition-all"
+            style={{ background: loading ? 'var(--secondary)' : 'linear-gradient(135deg, var(--primary), var(--primary))' }}>
             {loading ? <Loader className="w-4 h-4 animate-spin" /> : null}
             {mode === 'login' ? 'Sign In' : userType === 'therapist' ? 'Create Therapist Account' : 'Create Account'}
           </button>
 
           <p className="text-center text-xs text-gray-400 pt-2">
             By continuing, you agree to our{' '}
-            <span className="text-[#6B7F5E] cursor-pointer hover:underline">Privacy Policy</span>
+            <span className="text-[var(--primary)] cursor-pointer hover:underline">Privacy Policy</span>
           </p>
         </form>
       </div>

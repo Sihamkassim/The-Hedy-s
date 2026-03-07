@@ -37,25 +37,25 @@ export default function TherapistsPage() {
   })
 
   return (
-    <div className="min-h-screen" style={{ background: "#F7F4EF" }}>
+    <div className="min-h-screen" style={{ background: "var(--base-bg)" }}>
       {/* Header */}
-      <div className="py-16 px-4 text-center" style={{ background: "linear-gradient(135deg, #2C3E1E, #4A5E3A)" }}>
-        <Leaf className="w-10 h-10 text-white/40 mx-auto mb-3" />
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">Find Your Provider</h1>
-        <p className="text-white/70 max-w-lg mx-auto text-sm leading-relaxed">Connect with compassionate professionals who understand your journey. Free support available for women in crisis.</p>
+      <div className="py-16 px-4 text-center" style={{ background: "linear-gradient(135deg, var(--primary), var(--secondary))" }}>
+        <Leaf className="w-10 h-10 text-primary-inverse opacity-40 mx-auto mb-3" />
+        <h1 className="text-4xl md:text-5xl font-bold text-primary-inverse mb-3">Find Your Provider</h1>
+        <p className="text-primary-inverse opacity-70 max-w-lg mx-auto text-sm leading-relaxed">Connect with compassionate professionals who understand your journey. Free support available for women in crisis.</p>
       </div>
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 -mt-6">
         {/* Type Toggle */}
         <div className="flex justify-center mb-6">
-          <div className="bg-white p-1 rounded-2xl shadow-sm inline-flex" style={{ border: "1px solid #E8EDE0" }}>
+          <div className="bg-base-bg p-1 rounded-2xl shadow-sm inline-flex" style={{ border: "1px solid color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }}>
             {["all", "therapist", "spiritual"].map(type => (
               <button
                 key={type}
                 onClick={() => setProviderType(type)}
-                className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${providerType === type ? 'text-white' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ background: providerType === type ? "linear-gradient(135deg, #4A5E3A, #6B7F5E)" : "transparent" }}
+                className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${providerType === type ? 'text-primary-inverse' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ background: providerType === type ? "linear-gradient(135deg, var(--primary), var(--primary))" : "transparent" }}
               >
                 {type === "all" ? "All Providers" : type === "therapist" ? "Mental Health Doctors" : "Spiritual Assistance"}
               </button>
@@ -63,17 +63,17 @@ export default function TherapistsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-5 flex flex-col md:flex-row gap-4" style={{ border: "1px solid #E8EDE0" }}>
+        <div className="bg-base-bg rounded-2xl shadow-lg p-5 flex flex-col md:flex-row gap-4" style={{ border: "1px solid color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }}>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" placeholder="Search by name or specialization..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all" style={{ borderColor: "#D4DBC8", color: "#2C3E1E" }} />
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-all" style={{ borderColor: "#D4DBC8", color: "var(--base-text)" }} />
           </div>
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-400" />
             {["all", "free", "paid"].map(f => (
               <button key={f} onClick={() => setFilter(f)} className="px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all"
-                style={{ background: filter === f ? "#4A5E3A" : "#E8EDE0", color: filter === f ? "white" : "#4A5E3A" }}>
+                style={{ background: filter === f ? "var(--primary)" : "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)", color: filter === f ? "var(--base-bg)" : "var(--primary)" }}>
                 {f === "all" ? "All" : f === "free" ? "Free Support" : "Paid Sessions"}
               </button>
             ))}
@@ -85,7 +85,7 @@ export default function TherapistsPage() {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map(i => <div key={i} className="h-56 rounded-2xl animate-pulse" style={{ background: "#E8EDE0" }} />)}
+            {[...Array(6)].map(i => <div key={i} className="h-56 rounded-2xl animate-pulse" style={{ background: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }} />)}
           </div>
         ) : (
           <>
@@ -94,13 +94,13 @@ export default function TherapistsPage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayList.map((t, i) => (
-                <div key={t.id || i} className="bg-white rounded-2xl border p-6 hover:shadow-lg hover:-translate-y-1 transition-all group" style={{ borderColor: "#E8EDE0" }}>
+                <div key={t.id || i} className="bg-base-bg rounded-2xl border p-6 hover:shadow-lg hover:-translate-y-1 transition-all group" style={{ borderColor: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }}>
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, #4A5E3A, #8A9E6C)" }}>
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-primary-inverse text-xl font-bold flex-shrink-0" style={{ background: "linear-gradient(135deg, var(--primary), var(--secondary))" }}>
                       {(t.name || "?").charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base truncate" style={{ color: "#2C3E1E" }}>{t.name}</h3>
+                      <h3 className="font-bold text-base truncate" style={{ color: "var(--base-text)" }}>{t.name}</h3>
                       <p className="text-xs text-gray-500 mt-0.5 truncate">{t.specialization || (t.type === 'spiritual' ? `Spiritual Guide (${t.religion})` : 'Therapist')}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -108,7 +108,7 @@ export default function TherapistsPage() {
                       </div>
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-                      style={{ background: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "#E8EDE0" : "#FEF3C7", color: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "#4A5E3A" : "#78350F" }}>
+                      style={{ background: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" : "#FEF3C7", color: (t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "var(--primary)" : "#78350F" }}>
                       {(t.isFreeSupport || t.priceAmount === 0 || t.sessionPrice === 0) ? "Free" : `$${t.sessionPrice || t.priceAmount || t.pricePerSession || t.sessionPrice || "Paid"}`}
                     </span>
                   </div>
@@ -116,13 +116,13 @@ export default function TherapistsPage() {
                   {t.availability && (
                     <div className="flex flex-wrap gap-1 mb-4">
                       {(Array.isArray(t.availability) ? t.availability.slice(0, 2) : []).map((a, j) => (
-                        <span key={j} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "#E8EDE0", color: "#4A5E3A" }}>{a}</span>
+                        <span key={j} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)", color: "var(--primary)" }}>{a}</span>
                       ))}
                     </div>
                   )}
                   <Link to={`/booking/${t.id}?type=${t.type}`}
-                    className="block w-full py-2.5 rounded-xl font-semibold text-sm text-center text-white transition-all hover:shadow-md"
-                    style={{ background: "linear-gradient(135deg, #4A5E3A, #6B7F5E)" }}>
+                    className="block w-full py-2.5 rounded-xl font-semibold text-sm text-center text-primary-inverse transition-all hover:shadow-md"
+                    style={{ background: "linear-gradient(135deg, var(--primary), var(--primary))" }}>
                     Book Session
                   </Link>
                 </div>
