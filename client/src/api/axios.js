@@ -12,7 +12,9 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthRoute = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+    
+    if (error.response?.status === 401 && !isAuthRoute) {
       localStorage.removeItem('herspace_token')
       localStorage.removeItem('herspace_user')
       window.location.href = '/'
