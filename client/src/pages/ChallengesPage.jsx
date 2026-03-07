@@ -95,9 +95,9 @@ function ChallengesPage() {
           {/* Stats row */}
           <div className="flex justify-center gap-8 mt-10">
             {[
-              { label: 'Active Participants', value: challenges.reduce((s, c) => s + (c.participants || 0), 0).toLocaleString() || '9,000+' },
-              { label: 'Challenges', value: challenges.length || '4' },
-              { label: 'Days of Growth', value: '30' },
+              { label: 'Active Participants', value: challenges.reduce((s, c) => s + (c._count?.progress || c.participants || 0), 0).toLocaleString() || '0' },
+              { label: 'Challenges', value: challenges.length || '0' },
+              { label: 'Days of Growth', value: challenges.reduce((s, c) => s + (c.duration || 0), 0) || '0' },
             ].map((s, i) => (
               <div key={i} className="text-center">
                 <div className="text-2xl font-bold text-white">{loading ? '—' : s.value}</div>
@@ -168,7 +168,7 @@ function ChallengesPage() {
                     <div className="flex items-center justify-between mb-4 text-xs text-gray-400">
                       <span className="flex items-center gap-1">
                         <Users className="w-3.5 h-3.5" />
-                        {(challenge.participants || 0).toLocaleString()} joined
+                        {((challenge._count?.progress) || challenge.participants || 0).toLocaleString()} joined
                       </span>
                       <span className="flex items-center gap-1">
                         <TrendingUp className="w-3.5 h-3.5" />

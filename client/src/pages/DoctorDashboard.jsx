@@ -362,7 +362,7 @@ export default function DoctorDashboard() {
                     <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#6B7F5E' }}>{c.duration} Days</p>
                     <p className="text-sm text-gray-500 line-clamp-2">{c.description}</p>
                     <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-                      <span>{c.participantsCount || 0} participants</span>
+                      <span>{(c._count?.progress) || c.participantsCount || 0} participants</span>
                     </div>
                   </div>
                 ))}

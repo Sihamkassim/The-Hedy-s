@@ -136,41 +136,70 @@ export default function ChallengeDetailPage() {
           )}
         </div>
 
-        {/* Trail / Path UI */}
-        <div className="relative py-8">
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-[#E8EDE0] -ml-0.5 rounded-full z-0" />
-          
-          <div className="space-y-6 relative z-10">
-            {days.map((d, i) => (
-              <div key={i} className={`flex items-center gap-6 md:justify-between ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                
-                {/* Desktop Spacer */}
-                <div className="hidden md:block md:w-[45%]" />
-                
-                {/* Node */}
-                <div className="relative shrink-0">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 z-10 relative bg-white shadow-sm transition-all
-                    ${d.isCompleted ? 'border-[#4A5E3A] bg-[#4A5E3A] text-white scale-100' : d.isCurrent ? 'border-[#A3C17A] text-[#4A5E3A] scale-110 shadow-md ring-4 ring-[#A3C17A]/20' : 'border-gray-200 text-gray-400 opacity-60 scale-90'}`}>
-                    {d.isCompleted ? <CheckCircle className="w-7 h-7" /> : <span className="font-bold text-lg">{d.dayNum}</span>}
-                  </div>
+        {/* Trail / Path UI OR Simple Progress if repetitive */}
+        {challenge.isRepetitive ? (
+          <div className="bg-white rounded-3xl p-8 text-center shadow-sm border border-[#E8EDE0] mt-8">
+            <div className="w-24 h-24 mx-auto bg-[#F2F6ED] rounded-full flex items-center justify-center mb-6 border-4 border-[#E8EDE0]">
+              <Calendar className="w-10 h-10 text-[#4A5E3A]" />
+            </div>
+            <h3 className="text-xl font-bold text-[#2C3E1E] mb-3">Daily Habit</h3>
+            <p className="text-gray-600 max-w-lg mx-auto leading-relaxed">
+              {challenge.description}
+            </p>
+            <div className="mt-8 flex items-center justify-center gap-2 flex-wrap max-w-xl mx-auto">
+              {days.map((d, i) => (
+                <div 
+                  key={i} 
+                  title={`Day ${d.dayNum}`}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+                    d.isCompleted 
+                      ? 'bg-[#4A5E3A] text-white shadow-md' 
+                      : d.isCurrent 
+                        ? 'bg-white border-2 border-[#A3C17A] text-[#4A5E3A]' 
+                        : 'bg-gray-100 text-gray-400'
+                  }`}
+                >
+                  {d.isCompleted ? <CheckCircle className="w-5 h-5" /> : d.dayNum}
                 </div>
-
-                {/* Card */}
-                <div className="flex-1 md:w-[45%]">
-                  <div className={`p-5 rounded-2xl border transition-all ${d.isCurrent ? 'bg-white shadow-md border-[#A3C17A]' : d.isCompleted ? 'bg-[#F2F6ED] border-[#E8EDE0] opacity-80' : 'bg-white border-gray-100 opacity-60'}`}>
-                    <h4 className={`text-sm font-bold uppercase tracking-wider mb-1 ${d.isCompleted ? 'text-[#4A5E3A]' : 'text-gray-400'}`}>
-                      Day {d.dayNum} {d.isTodayDone && <span className="text-xs normal-case font-medium ml-2 text-[#6B7F5E] badge">(Completed Today)</span>}
-                    </h4>
-                    <p className={`text-sm ${d.isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>
-                      {d.taskText}
-                    </p>
-                  </div>
-                </div>
-                
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="relative py-8">
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-[#E8EDE0] -ml-0.5 rounded-full z-0" />
+            
+            <div className="space-y-6 relative z-10">
+              {days.map((d, i) => (
+                <div key={i} className={`flex items-center gap-6 md:justify-between ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                  
+                  {/* Desktop Spacer */}
+                  <div className="hidden md:block md:w-[45%]" />
+                  
+                  {/* Node */}
+                  <div className="relative shrink-0">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 z-10 relative bg-white shadow-sm transition-all
+                      ${d.isCompleted ? 'border-[#4A5E3A] bg-[#4A5E3A] text-white scale-100' : d.isCurrent ? 'border-[#A3C17A] text-[#4A5E3A] scale-110 shadow-md ring-4 ring-[#A3C17A]/20' : 'border-gray-200 text-gray-400 opacity-60 scale-90'}`}>
+                      {d.isCompleted ? <CheckCircle className="w-7 h-7" /> : <span className="font-bold text-lg">{d.dayNum}</span>}
+                    </div>
+                  </div>
+
+                  {/* Card */}
+                  <div className="flex-1 md:w-[45%]">
+                    <div className={`p-5 rounded-2xl border transition-all ${d.isCurrent ? 'bg-white shadow-md border-[#A3C17A]' : d.isCompleted ? 'bg-[#F2F6ED] border-[#E8EDE0] opacity-80' : 'bg-white border-gray-100 opacity-60'}`}>
+                      <h4 className={`text-sm font-bold uppercase tracking-wider mb-1 ${d.isCompleted ? 'text-[#4A5E3A]' : 'text-gray-400'}`}>
+                        Day {d.dayNum} {d.isTodayDone && <span className="text-xs normal-case font-medium ml-2 text-[#6B7F5E] badge">(Completed Today)</span>}
+                      </h4>
+                      <p className={`text-sm ${d.isCompleted ? 'text-gray-600' : 'text-gray-500'}`}>
+                        {d.taskText}
+                      </p>
+                    </div>
+                  </div>
+                  
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

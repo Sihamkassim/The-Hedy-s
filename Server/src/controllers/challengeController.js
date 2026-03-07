@@ -5,7 +5,12 @@ const prisma = new PrismaClient();
 // Get all challenges
 exports.getAllChallenges = catchAsync(async (req, res) => {
   const challenges = await prisma.challenge.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { progress: true }
+      }
+    }
   });
 
   res.status(200).json({
