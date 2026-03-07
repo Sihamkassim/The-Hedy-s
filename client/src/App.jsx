@@ -7,6 +7,7 @@ import TherapistsPage from './pages/TherapistsPage'
 import BookingPage from './pages/BookingPage'
 import FreeHelpPage from './pages/FreeHelpPage'
 import ChallengesPage from './pages/ChallengesPage'
+import ChallengeDetailPage from './pages/ChallengeDetailPage'
 import Dashboard from './pages/Dashboard'
 import AdminPage from './pages/AdminPage'
 import DoctorDashboard from './pages/DoctorDashboard'
@@ -26,6 +27,7 @@ function App() {
               <Route path="/booking/:id" element={<BookingPage />} />
               <Route path="/free-help" element={<FreeHelpPage />} />
               <Route path="/challenges" element={<ChallengesPage />} />
+              <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/ai-assistant" element={<AIAssistantPage />} />
               <Route path="/dashboard" element={<Dashboard />} />

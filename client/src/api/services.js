@@ -60,6 +60,7 @@ export const chatAPI = {
   getContacts: () => api.get('/chat/contacts'),
   getMessagesWithUser: (userId) => api.get(`/chat/messages/${userId}`),
   sendMessage: (data) => api.post('/chat/messages', data),
+  createVideoRoom: (data) => api.post('/chat/video-room', data),
 }
 
 // Doctor-specific endpoints

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { MessageCircle, SendHorizonal, Loader, User, Search, AlertCircle } from 'lucide-react'
+import { MessageCircle, SendHorizonal, Loader, User, Search, AlertCircle, Video } from 'lucide-react'
 import { chatAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { io } from 'socket.io-client'
+import VideoCallModal from '../components/VideoCallModal'
 
 export default function ChatPage() {
   const { user, isAuthenticated } = useAuth()
@@ -17,6 +18,8 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [socket, setSocket] = useState(null)
+  const [videoRoomUrl, setVideoRoomUrl] = useState(null)
+  const [creatingCall, setCreatingCall] = useState(false)
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -89,6 +92,34 @@ export default function ChatPage() {
       }
     } catch {}
     setSending(false)
+  }
+
+  const handleStartVideoCall = async () => {
+    if (!selectedContact || creatingCall) return
+    setCreatingCall(true)
+
+    try {
+      const res = await chatAPI.createVideoRoom({ receiverId: selectedContact.id })
+      if (res.data.data.roomUrl) {
+        const callLink = `[VIDEO_CALL]: ${res.data.data.roomUrl}`
+        await chatAPI.sendMessage({ receiverId: selectedContact.id, message: callLink })
+
+        if (socket && user) {
+          const roomId = [user.id, selectedContact.id].sort().join('-')
+          socket.emit('send_message', {
+            roomId,
+            senderId: user.id,
+            receiverId: selectedContact.id,
+            message: callLink,
+          })
+        }
+        setVideoRoomUrl(res.data.data.roomUrl)
+      }
+    } catch (err) {
+      console.error('Failed to create video call', err)
+    } finally {
+      setCreatingCall(false)
+    }
   }
 
   const filteredContacts = contacts.filter((c) =>
@@ -172,22 +203,55 @@ export default function ChatPage() {
                 </p>
                 <p className="text-xs text-gray-400 capitalize">{selectedContact.role || 'User'}</p>
               </div>
+              <div className="ml-auto">
+                <button
+                  onClick={handleStartVideoCall}
+                  disabled={creatingCall}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, #4A5E3A, #6B7F5E)' }}
+                >
+                  {creatingCall ? (
+                    <Loader className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Video className="w-4 h-4" />
+                  )}
+                  <span className="hidden sm:inline">Start Video Call</span>
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
               {messages.map((m, i) => {
                 const isMe = m.senderId === user?.id
+                const isVideoCall = m.message.startsWith('[VIDEO_CALL]: ')
+                let displayMsg = m.message
+                let callUrl = ''
+                
+                if (isVideoCall) {
+                  callUrl = m.message.replace('[VIDEO_CALL]: ', '').trim()
+                  displayMsg = isMe ? 'You started a video call.' : `${selectedContact.name} invited you to a video call.`
+                }
+
                 return (
                   <div key={m.id || i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                     <div
-                      className="max-w-xs px-4 py-2.5 rounded-2xl text-sm"
+                      className="max-w-xs px-4 py-2.5 rounded-2xl text-sm break-words whitespace-pre-wrap"
                       style={
                         isMe
-                          ? { background: '#4A5E3A', color: '#fff', borderBottomRightRadius: 4 }
-                          : { background: '#E8EDE0', color: '#2C3E1E', borderBottomLeftRadius: 4 }
+                          ? { background: '#4A5E3A', color: '#fff', borderBottomRightRadius: 4 }       
+                          : { background: '#E8EDE0', color: '#2C3E1E', borderBottomLeftRadius: 4 }     
                       }
                     >
-                      {m.message}
+                      {displayMsg}
+                      {isVideoCall && (
+                        <button
+                          onClick={() => setVideoRoomUrl(callUrl)}
+                          className="mt-2 block w-full text-center px-4 py-2 rounded-xl text-sm font-bold bg-white/20 hover:bg-white/30 transition-all border border-white/30"
+                          style={!isMe ? { background: '#4A5E3A', color: '#fff' } : { color: '#fff' }}
+                        >
+                          Join Call
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
@@ -235,6 +299,13 @@ export default function ChatPage() {
           </div>
         )}
       </div>
+
+      {videoRoomUrl && (
+        <VideoCallModal
+          roomUrl={videoRoomUrl}
+          onClose={() => setVideoRoomUrl(null)}
+        />
+      )}
     </div>
   )
 }

@@ -86,6 +86,9 @@ model Challenge {
   title       String
   description String
   duration    Int      // Duration in days
+  isRepetitive Boolean @default(true)
+  dailyTasks  String[]
+
   createdAt   DateTime @default(now())
 
   progress ChallengeProgress[]
@@ -96,7 +99,9 @@ model ChallengeProgress {
   userId        String
   challengeId   String
   completedDays Int      @default(0)
+  completedTaskDates DateTime[] // Dates when tasks were completed
   progress      Float    @default(0)
+  lastLogDate   DateTime?
   createdAt     DateTime @default(now())
 
   user      User      @relation(fields: [userId], references: [id])

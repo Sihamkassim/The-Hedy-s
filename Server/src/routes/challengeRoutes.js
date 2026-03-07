@@ -16,22 +16,22 @@ router.post('/:id/join', challengeController.joinChallenge);
 router.patch('/:id/progress', challengeController.updateProgress);
 router.get('/my/progress', challengeController.getMyProgress);
 
-// Admin routes
+// Admin and Therapist routes
 router.post(
   '/',
-  authMiddleware.restrictTo('admin'),
+  authMiddleware.restrictTo('admin', 'doctor'),
   challengeController.createChallenge
 );
 
 router.patch(
   '/:id',
-  authMiddleware.restrictTo('admin'),
+  authMiddleware.restrictTo('admin', 'doctor'),
   challengeController.updateChallenge
 );
 
 router.delete(
   '/:id',
-  authMiddleware.restrictTo('admin'),
+  authMiddleware.restrictTo('admin', 'doctor'),
   challengeController.deleteChallenge
 );
 

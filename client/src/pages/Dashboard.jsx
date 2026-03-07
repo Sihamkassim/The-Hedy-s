@@ -24,15 +24,15 @@ export default function Dashboard() {
   }
 
   const handleUpdateProgress = async (progressItem) => {
-    const newDays = Math.min((progressItem.completedDays || 0) + 1, progressItem.challenge?.duration || 30)
     setUpdatingId(progressItem.id)
     try {
-      await challengeAPI.updateProgress(progressItem.challengeId || progressItem.id, { completedDays: newDays })
-      setMyProgress(prev => prev.map(p => p.id === progressItem.id
-        ? { ...p, completedDays: newDays, progress: Math.round((newDays / (p.challenge?.duration || 30)) * 100) }
-        : p
-      ))
-    } catch {}
+      // Just hit the endpoint, it auto-increments
+      const res = await challengeAPI.updateProgress(progressItem.challengeId || progressItem.id, {})
+      const updatedProg = res.data.data.progress
+      setMyProgress(prev => prev.map(p => p.id === progressItem.id ? updatedProg : p))
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not update progress')
+    }
     setUpdatingId(null)
   }
 

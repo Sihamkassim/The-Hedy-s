@@ -38,13 +38,15 @@ exports.getChallenge = catchAsync(async (req, res) => {
 
 // Create challenge (admin only)
 exports.createChallenge = catchAsync(async (req, res) => {
-  const { title, description, duration } = req.body;
+  const { title, description, duration, isRepetitive = true, dailyTasks = [] } = req.body;
 
   const challenge = await prisma.challenge.create({
     data: {
       title,
       description,
-      duration
+      duration,
+      isRepetitive,
+      dailyTasks
     }
   });
 
@@ -105,11 +107,11 @@ exports.joinChallenge = catchAsync(async (req, res) => {
   });
 });
 
-// Update challenge progress
+// Update challenge progress (Log a daily task completion)
 exports.updateProgress = catchAsync(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
-  const { completedDays } = req.body;
+  // const { completedDays } = req.body; // Deprecated manual setting
 
   const progressRecord = await prisma.challengeProgress.findFirst({
     where: {
@@ -128,13 +130,32 @@ exports.updateProgress = catchAsync(async (req, res) => {
     });
   }
 
-  const progress = (completedDays / progressRecord.challenge.duration) * 100;
+  // Check if already logged today
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  if (progressRecord.lastLogDate) {
+    const lastLog = new Date(progressRecord.lastLogDate);
+    lastLog.setHours(0,0,0,0);
+    if (lastLog.getTime() === today.getTime()) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'You have already completed the task for today'
+      });
+    }
+  }
+
+  const newCompletedDays = progressRecord.completedDays + 1;
+  const progress = Math.min((newCompletedDays / progressRecord.challenge.duration) * 100, 100);
 
   const updatedProgress = await prisma.challengeProgress.update({
     where: { id: progressRecord.id },
     data: {
-      completedDays,
-      progress
+      completedDays: newCompletedDays,
+      progress,
+      lastLogDate: new Date(),
+      completedTaskDates: {
+        push: new Date()
+      }
     },
     include: {
       challenge: true

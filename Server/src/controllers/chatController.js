@@ -121,3 +121,74 @@ exports.sendMessage = catchAsync(async (req, res) => {
     data: { message: savedMessage },
   });
 });
+
+exports.createVideoRoom = catchAsync(async (req, res) => {
+  const { receiverId } = req.body;
+
+  if (!receiverId) {
+    return res.status(400).json({ status: 'error', message: 'receiverId is required' });
+  }
+
+  const jitsiDomain = process.env.JITSI_DOMAIN || 'meet.jit.si';
+
+  let appointment = null;
+
+  if (req.user.role === 'doctor') {
+    const therapist = await prisma.therapist.findUnique({
+      where: { email: req.user.email },
+      select: { id: true },
+    });
+
+    if (!therapist) {
+      return res.status(404).json({ status: 'error', message: 'Therapist profile not found' });
+    }
+
+    appointment = await prisma.appointment.findFirst({
+      where: {
+        therapistId: therapist.id,
+        userId: receiverId,
+        status: { in: ['confirmed', 'completed'] },
+      },
+      orderBy: { date: 'desc' },
+    });
+  } else {
+    const receiverUser = await prisma.user.findUnique({
+      where: { id: receiverId },
+      select: { email: true, role: true },
+    });
+
+    if (!receiverUser || receiverUser.role !== 'doctor') {
+      return res.status(404).json({ status: 'error', message: 'Doctor account not found' });
+    }
+
+    const therapist = await prisma.therapist.findUnique({
+      where: { email: receiverUser.email },
+      select: { id: true },
+    });
+
+    if (!therapist) {
+      return res.status(404).json({ status: 'error', message: 'Therapist profile not found' });
+    }
+
+    appointment = await prisma.appointment.findFirst({
+      where: {
+        therapistId: therapist.id,
+        userId: req.user.id,
+        status: { in: ['confirmed', 'completed'] },
+      },
+      orderBy: { date: 'desc' },
+    });
+  }
+
+  if (!appointment) {
+    return res.status(403).json({ status: 'error', message: 'No confirmed appointment for this call' });
+  }
+
+  const roomName = `repair-consult-${appointment.id}`;
+  const roomUrl = `https://${jitsiDomain}/${roomName}`;
+
+  res.status(200).json({
+    status: 'success',
+    data: { roomUrl, roomName },
+  });
+});

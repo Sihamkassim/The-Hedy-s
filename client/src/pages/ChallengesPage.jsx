@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Leaf, TrendingUp, Award, Users, CheckCircle, Loader, Lock, ChevronRight, Sprout } from 'lucide-react'
 import { challengeAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
@@ -194,10 +195,10 @@ function ChallengesPage() {
                     {/* Action */}
                     <div className="flex items-center gap-3">
                       {isJoined ? (
-                        <span className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full"
-                          style={{ background: '#E8EDE0', color: '#4A5E3A' }}>
-                          <CheckCircle className="w-3.5 h-3.5" /> Enrolled
-                        </span>
+                        <Link to={`/challenges/${challenge.id}`} className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full transition-colors hover:opacity-80"
+                          style={{ background: '#4A5E3A', color: '#fff' }}>
+                          <CheckCircle className="w-3.5 h-3.5" /> Continue Journey
+                        </Link>
                       ) : (
                         <button onClick={() => handleJoin(challenge.id)}
                           disabled={joining === challenge.id}
