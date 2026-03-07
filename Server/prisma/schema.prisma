@@ -12,11 +12,13 @@ datasource db {
 enum Role {
   patient
   doctor
+  spiritual_leader
   admin
 }
 
 enum AppointmentStatus {
   pending
+  paid
   confirmed
   completed
   cancelled
@@ -32,7 +34,10 @@ model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
+  religion  String?
   password  String
+  pseudonym String?  @unique
+  phoneNumber String? @unique
   role      Role     @default(patient)
   createdAt DateTime @default(now())
 
@@ -65,17 +70,37 @@ model Therapist {
   appointments Appointment[]
 }
 
+model SpiritualLeader {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  religion       String
+  specialization String
+  experience     Int
+  rating         Float    @default(0)
+  sessionPrice   Float
+  availability   Json
+  bio            String
+  createdAt      DateTime @default(now())
+
+  appointments Appointment[] @relation("SpiritualAppointments")
+}
+
 model Appointment {
   id          String   @id @default(uuid())
   userId      String
-  therapistId String
+  therapistId String?
+  spiritualId String?
   date        DateTime
   time        String
+  mpesaCheckoutId String? @unique
+  videoUrl    String?
   status      AppointmentStatus @default(pending)
   createdAt   DateTime @default(now())
 
   user        User      @relation("UserAppointments", fields: [userId], references: [id])
-  therapist   Therapist @relation(fields: [therapistId], references: [id])
+  therapist   Therapist? @relation(fields: [therapistId], references: [id])
+  spiritualLeader SpiritualLeader? @relation("SpiritualAppointments", fields: [spiritualId], references: [id])
 }
 
 model Message {

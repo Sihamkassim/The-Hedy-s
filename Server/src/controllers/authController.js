@@ -27,7 +27,10 @@ exports.register = catchAsync(async (req, res, next) => {
   const {
     name,
     email,
+    religion,
     password,
+    pseudonym,
+    phoneNumber,
     role,
     specialization,
     speciality,
@@ -45,7 +48,7 @@ exports.register = catchAsync(async (req, res, next) => {
       ? 'patient'
       : requestedRole;
 
-  if (!['patient', 'doctor', 'admin'].includes(normalizedRole)) {
+  if (!['patient', 'doctor', 'spiritual_leader', 'admin'].includes(normalizedRole)) {
     return res.status(400).json({ message: 'Invalid role selected' });
   }
 
@@ -59,6 +62,14 @@ exports.register = catchAsync(async (req, res, next) => {
     }
   }
 
+  if (normalizedRole === 'spiritual_leader') {
+    if (!religion || !(specialization || speciality) || !experience) {
+      return res.status(400).json({
+        message: 'Spiritual leader signup requires religion, specialization, and experience',
+      });
+    }
+  }
+
   const hashedPassword = await bcrypt.hash(password, 12);
 
   const createdData = await prisma.$transaction(async (tx) => {
@@ -66,12 +77,16 @@ exports.register = catchAsync(async (req, res, next) => {
       data: {
         name,
         email,
+        religion: religion || null,
         password: hashedPassword,
+        pseudonym: pseudonym || null,
+        phoneNumber: phoneNumber || null,
         role: normalizedRole,
       },
     });
 
     let therapistProfile = null;
+    let spiritualLeaderProfile = null;
     if (normalizedRole === 'doctor') {
       let degreePath = degree;
       let certPath = certificate;
@@ -96,9 +111,22 @@ exports.register = catchAsync(async (req, res, next) => {
           availability: {},
         },
       });
+    } else if (normalizedRole === 'spiritual_leader') {
+      spiritualLeaderProfile = await tx.spiritualLeader.create({
+        data: {
+          name,
+          email,
+          religion,
+          specialization: specialization || speciality,
+          experience: Number(experience),
+          sessionPrice: Number(sessionPrice || 0),
+          availability: {},
+          bio: bio || 'Spiritual leader profile created during registration.',
+        },
+      });
     }
 
-    return { newUser, therapistProfile };
+    return { newUser, therapistProfile, spiritualLeaderProfile };
   });
 
   const token = signToken(createdData.newUser.id);
@@ -110,6 +138,7 @@ exports.register = catchAsync(async (req, res, next) => {
     data: {
       user: createdData.newUser,
       therapistProfile: createdData.therapistProfile,
+      spiritualLeaderProfile: createdData.spiritualLeaderProfile,
     },
   });
 });
@@ -137,11 +166,16 @@ exports.getMe = catchAsync(async (req, res, next) => {
   });
 
   let therapistProfile = null;
+  let spiritualLeaderProfile = null;
   if (user.role === 'doctor') {
     therapistProfile = await prisma.therapist.findUnique({
       where: { email: user.email }
     });
+  } else if (user.role === 'spiritual_leader') {
+    spiritualLeaderProfile = await prisma.spiritualLeader.findUnique({
+      where: { email: user.email }
+    });
   }
 
-  res.status(200).json({ status: 'success', data: { user, therapistProfile } });
+  res.status(200).json({ status: 'success', data: { user, therapistProfile, spiritualLeaderProfile } });
 });

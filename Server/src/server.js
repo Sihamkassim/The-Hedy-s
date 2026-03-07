@@ -33,6 +33,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/therapists', require('./routes/therapistRoutes'));
+app.use('/api/spiritual-leaders', require('./routes/spiritualLeaderRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));

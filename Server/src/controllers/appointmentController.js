@@ -4,26 +4,55 @@ const prisma = new PrismaClient();
 
 // Create a new appointment
 exports.createAppointment = catchAsync(async (req, res) => {
-  const { therapistId, date, time } = req.body;
+  const { therapistId, spiritualId, date, time } = req.body;
   const userId = req.user.id;
 
-  // Check if therapist exists
-  const therapist = await prisma.therapist.findUnique({
-    where: { id: therapistId }
-  });
-
-  if (!therapist) {
-    return res.status(404).json({
+  if (!therapistId && !spiritualId) {
+    return res.status(400).json({
       status: 'error',
-      message: 'Therapist not found'
+      message: 'Either therapistId or spiritualId is required'
     });
+  }
+
+  if (therapistId && spiritualId) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Only one of therapistId or spiritualId can be set'
+    });
+  }
+
+  if (therapistId) {
+    const therapist = await prisma.therapist.findUnique({
+      where: { id: therapistId }
+    });
+
+    if (!therapist) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Therapist not found'
+      });
+    }
+  }
+
+  if (spiritualId) {
+    const spiritualLeader = await prisma.spiritualLeader.findUnique({
+      where: { id: spiritualId }
+    });
+
+    if (!spiritualLeader) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Spiritual leader not found'
+      });
+    }
   }
 
   // Create appointment
   const appointment = await prisma.appointment.create({
     data: {
       userId,
-      therapistId,
+      therapistId: therapistId || null,
+      spiritualId: spiritualId || null,
       date: new Date(date),
       time,
       status: 'pending'
@@ -34,6 +63,14 @@ exports.createAppointment = catchAsync(async (req, res) => {
           name: true,
           specialization: true,
           email: true
+        }
+      },
+      spiritualLeader: {
+        select: {
+          name: true,
+          specialization: true,
+          email: true,
+          religion: true
         }
       },
       user: {
@@ -64,6 +101,14 @@ exports.getMyAppointments = catchAsync(async (req, res) => {
           specialization: true,
           email: true
         }
+      },
+      spiritualLeader: {
+        select: {
+          name: true,
+          specialization: true,
+          email: true,
+          religion: true
+        }
       }
     },
     orderBy: { date: 'desc' }
@@ -88,6 +133,7 @@ exports.getAppointment = catchAsync(async (req, res) => {
     },
     include: {
       therapist: true,
+      spiritualLeader: true,
       user: {
         select: {
           id: true,
@@ -116,7 +162,7 @@ exports.updateAppointment = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  if (!['pending', 'confirmed', 'completed', 'cancelled'].includes(status)) {
+  if (!['pending', 'paid', 'confirmed', 'completed', 'cancelled'].includes(status)) {
     return res.status(400).json({
       status: 'error',
       message: 'Invalid status'
@@ -128,6 +174,7 @@ exports.updateAppointment = catchAsync(async (req, res) => {
     data: { status },
     include: {
       therapist: true,
+      spiritualLeader: true,
       user: {
         select: {
           id: true,
@@ -146,11 +193,43 @@ exports.updateAppointment = catchAsync(async (req, res) => {
 
 // Get doctor's own schedule (matches by email between User and Therapist)
 exports.getMySchedule = catchAsync(async (req, res) => {
-  const doctorEmail = req.user.email;
+  const userEmail = req.user.email;
+
+  if (req.user.role === 'spiritual_leader') {
+    const spiritualLeader = await prisma.spiritualLeader.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!spiritualLeader) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No spiritual leader profile linked to this account. Ask admin to create one with your email.',
+      });
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where: { spiritualId: spiritualLeader.id },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
+        },
+        spiritualLeader: {
+          select: { id: true, name: true, specialization: true, religion: true },
+        },
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      results: appointments.length,
+      data: { appointments, spiritualLeader },
+    });
+  }
 
   // Find the therapist record linked to this doctor account by email
   const therapist = await prisma.therapist.findUnique({
-    where: { email: doctorEmail },
+    where: { email: userEmail },
   });
 
   if (!therapist) {
@@ -215,6 +294,7 @@ exports.getAllAppointments = catchAsync(async (req, res) => {
   const appointments = await prisma.appointment.findMany({
     include: {
       therapist: true,
+      spiritualLeader: true,
       user: {
         select: {
           id: true,

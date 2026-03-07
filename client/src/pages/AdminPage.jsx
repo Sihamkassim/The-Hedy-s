@@ -20,6 +20,7 @@ const TABS = [
 
 const STATUS_COLORS = {
   pending:   { bg: '#FEF3C7', text: '#D97706' },
+  paid:      { bg: '#DBEAFE', text: '#2563EB' },
   confirmed: { bg: '#E8EDE0', text: '#4A5E3A' },
   completed: { bg: '#D1FAE5', text: '#065F46' },
   cancelled: { bg: '#FEE2E2', text: '#EF4444' },
@@ -28,6 +29,7 @@ const STATUS_COLORS = {
 const ROLE_COLORS = {
   patient: { bg: '#EDE9FE', text: '#6D28D9' },
   doctor:  { bg: '#E8EDE0', text: '#4A5E3A' },
+  spiritual_leader: { bg: '#E0F2FE', text: '#0369A1' },
   admin:   { bg: '#FEF3C7', text: '#D97706' },
 }
 
@@ -389,7 +391,7 @@ export default function AdminPage() {
                           </div>
                           <span className="text-xs font-semibold px-3 py-1 rounded-full capitalize" style={{ background: sc.bg, color: sc.text }}>{a.status}</span>
                           <div className="flex gap-2 flex-wrap">
-                            {['pending', 'confirmed', 'completed', 'cancelled'].filter(s => s !== a.status).map(s => (
+                            {['pending', 'paid', 'confirmed', 'completed', 'cancelled'].filter(s => s !== a.status).map(s => (
                               <button key={s} onClick={() => handleStatusUpdate(a.id, s)}
                                 disabled={updatingId === a.id}
                                 className="text-xs px-3 py-1.5 rounded-full border font-medium capitalize transition hover:opacity-80"

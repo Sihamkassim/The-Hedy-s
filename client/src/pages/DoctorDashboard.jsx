@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 const STATUS_COLORS = {
   pending:   { bg: '#FEF3C7', text: '#D97706' },
+  paid:      { bg: '#DBEAFE', text: '#2563EB' },
   confirmed: { bg: '#E8EDE0', text: '#4A5E3A' },
   completed: { bg: '#D1FAE5', text: '#065F46' },
   cancelled: { bg: '#FEE2E2', text: '#EF4444' },
@@ -13,6 +14,7 @@ const STATUS_COLORS = {
 
 const STATUS_ACTIONS = {
   pending:   ['confirmed', 'cancelled'],
+  paid:      ['confirmed', 'cancelled'],
   confirmed: ['completed', 'cancelled'],
   completed: [],
   cancelled: [],

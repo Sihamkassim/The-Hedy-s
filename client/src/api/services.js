@@ -19,6 +19,15 @@ export const therapistAPI = {
   delete: (id) => api.delete(`/therapists/${id}`),
 }
 
+export const spiritualLeaderAPI = {
+  getAll: (params) => api.get('/spiritual-leaders', { params }),
+  getOne: (id) => api.get(`/spiritual-leaders/${id}`),
+  // Admin only
+  create: (data) => api.post('/spiritual-leaders', data),
+  update: (id, data) => api.patch(`/spiritual-leaders/${id}`, data),
+  delete: (id) => api.delete(`/spiritual-leaders/${id}`),
+}
+
 export const appointmentAPI = {
   create: (data) => api.post('/appointments', data),
   getMyAppointments: () => api.get('/appointments/my-appointments'),
