@@ -7,9 +7,11 @@ const { registerSchema, loginSchema } = require('../validations/auth.validation'
 
 const router = express.Router();
 
-router.post('/register', upload.single('profileImage'), validate(registerSchema), authController.register);
-router.post('/login', validate(loginSchema), authController.login);
-
+router.post('/register', upload.fields([
+  { name: 'profileImage', maxCount: 1 },
+  { name: 'degreeFile', maxCount: 1 },
+  { name: 'certificateFile', maxCount: 1 }
+]), validate(registerSchema), authController.register);                                                                                                   
 // Protect all routes after this middleware
 router.use(authMiddleware.protect);
 

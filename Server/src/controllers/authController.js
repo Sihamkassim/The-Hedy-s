@@ -50,9 +50,11 @@ exports.register = catchAsync(async (req, res, next) => {
   }
 
   if (normalizedRole === 'doctor') {
-    if (!degree || !certificate || !experience || !(specialization || speciality)) {
+    const hasDegree = degree || (req.files && req.files.degreeFile);
+    const hasCert = certificate || (req.files && req.files.certificateFile);
+    if (!hasDegree || !hasCert || !experience || !(specialization || speciality)) {
       return res.status(400).json({
-        message: 'Therapist signup requires degree, certificate, experience, and specialization',
+        message: 'Therapist signup requires degree, certificate, experience, and specialization',      
       });
     }
   }
@@ -71,19 +73,27 @@ exports.register = catchAsync(async (req, res, next) => {
 
     let therapistProfile = null;
     if (normalizedRole === 'doctor') {
+      let degreePath = degree;
+      let certPath = certificate;
+
+      if (req.files) {
+        if (req.files.degreeFile) degreePath = `/uploads/documents/${req.files.degreeFile[0].filename}`;
+        if (req.files.certificateFile) certPath = `/uploads/documents/${req.files.certificateFile[0].filename}`;
+      }
+
       therapistProfile = await tx.therapist.create({
         data: {
           name,
           email,
           specialization: specialization || speciality,
-          degree,
-          certificate,
+          degree: degreePath,
+          certificate: certPath,
           experience: Number(experience),
           sessionPrice: Number(sessionPrice || 0),
           isFreeSupport: Number(sessionPrice || 0) === 0,
-          profileImage: req.file ? `/uploads/therapists/${req.file.filename}` : null,
-          availability: [],
+          profileImage: req.files && req.files.profileImage ? `/uploads/therapists/${req.files.profileImage[0].filename}` : null,
           bio: bio || 'Therapist profile created during registration.',
+          availability: {},
         },
       });
     }

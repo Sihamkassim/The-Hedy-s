@@ -17,6 +17,9 @@ export default function AuthModal({ onClose }) {
     bio: '',
   })
   const [profileImage, setProfileImage] = useState(null)
+  const [degreeFile, setDegreeFile] = useState(null)
+  const [certificateFile, setCertificateFile] = useState(null)
+
   const [imagePreview, setImagePreview] = useState(null)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -49,12 +52,14 @@ export default function AuthModal({ onClose }) {
           formData.append('password', form.password)
           formData.append('role', 'therapist')
           formData.append('specialization', form.specialization)
-          formData.append('degree', form.degree)
-          formData.append('certificate', form.certificate)
+          if (form.degree) formData.append('degree', form.degree)
+          if (form.certificate) formData.append('certificate', form.certificate)
           formData.append('experience', form.experience || '1')
           formData.append('sessionPrice', form.sessionPrice || '0')
           formData.append('bio', form.bio || 'New therapist.')
           if (profileImage) formData.append('profileImage', profileImage)
+          if (degreeFile) formData.append('degreeFile', degreeFile)
+          if (certificateFile) formData.append('certificateFile', certificateFile)
 
           await register(formData)
         } else {
@@ -82,6 +87,8 @@ export default function AuthModal({ onClose }) {
       bio: '',
     })
     setProfileImage(null)
+    setDegreeFile(null)
+    setCertificateFile(null)
     setImagePreview(null)
     setError('')
   }
@@ -199,19 +206,25 @@ export default function AuthModal({ onClose }) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> Degree
+                    <FileText className="w-3 h-3" /> Degree (PDF/Doc)
                   </label>
-                  <input type="text" placeholder="PhD, MD, PsyD..." required value={form.degree}
-                    onChange={e => setForm({ ...form, degree: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                  <label className="block w-full cursor-pointer">
+                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[#6B7F5E] text-sm text-gray-500 hover:text-[#4A5E3A] transition-all text-center truncate">
+                      {degreeFile ? degreeFile.name : 'Upload Degree…'}
+                    </div>
+                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => setDegreeFile(e.target.files?.[0])} className="hidden" />
+                  </label>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <Award className="w-3 h-3" /> Certificate
                   </label>
-                  <input type="text" placeholder="License #" required value={form.certificate}
-                    onChange={e => setForm({ ...form, certificate: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#6B7F5E] focus:ring-2 focus:ring-[#6B7F5E]/20 outline-none text-sm transition-all" />
+                  <label className="block w-full cursor-pointer">
+                    <div className="px-4 py-3 rounded-xl border border-dashed border-gray-300 hover:border-[#6B7F5E] text-sm text-gray-500 hover:text-[#4A5E3A] transition-all text-center truncate">
+                      {certificateFile ? certificateFile.name : 'Upload License…'}
+                    </div>
+                    <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" onChange={e => setCertificateFile(e.target.files?.[0])} className="hidden" />
+                  </label>
                 </div>
               </div>
 

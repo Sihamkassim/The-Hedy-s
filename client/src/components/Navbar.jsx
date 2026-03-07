@@ -11,11 +11,20 @@ function Navbar() {
   const { user, logout, isAuthenticated } = useAuth()
   const location = useLocation()
 
+  const getFirstLink = () => {
+    if (!isAuthenticated) return { to: '/', label: 'Home', icon: Home }
+    if (user?.role === 'doctor') return { to: '/doctor', label: 'My Schedule', icon: Calendar }
+    if (user?.role === 'admin') return { to: '/admin', label: 'Admin Panel', icon: ShieldCheck }
+    return { to: '/dashboard', label: 'My Dashboard', icon: Calendar }
+  }
+
   const navLinks = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/therapists', label: 'Therapists', icon: Users },
-    { to: '/challenges', label: 'Challenges', icon: BookOpen },
-    { to: '/free-help', label: 'Free Help', icon: Shield },
+    getFirstLink(),
+    ...(user?.role === 'doctor' || user?.role === 'admin' ? [] : [
+      { to: '/therapists', label: 'Therapists', icon: Users },
+      { to: '/challenges', label: 'Challenges', icon: BookOpen },
+      { to: '/free-help', label: 'Free Help', icon: Shield },
+    ]),
     { to: '/chat', label: 'Chat', icon: MessageCircle },
     { to: '/ai-assistant', label: 'AI Assistant', icon: Sparkles },
   ]
@@ -59,20 +68,6 @@ function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {isAuthenticated ? (
                 <>
-                  <Link to="/dashboard"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all"
-                    style={{ color: '#6B7F5E', background: '#E8EDE0' }}>
-                    <Calendar className="w-3.5 h-3.5" />
-                    Dashboard
-                  </Link>
-                  {(user?.role === 'admin' || user?.role === 'doctor') && (
-                    <Link to={user?.role === 'doctor' ? '/doctor' : '/admin'}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all"
-                      style={{ color: '#C17A55', background: '#FEF3C7' }}>
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      {user?.role === 'doctor' ? 'My Schedule' : 'Admin Panel'}
-                    </Link>
-                  )}
                   <div className="relative">
                     <button onClick={() => setShowUserMenu(!showUserMenu)}
                       className="flex items-center gap-2 px-3 py-2 rounded-full border transition-all hover:shadow-sm"
@@ -90,7 +85,7 @@ function Navbar() {
                           <p className="text-xs text-gray-400">Signed in as</p>
                           <p className="text-sm font-semibold text-gray-700 truncate">{user?.email}</p>
                         </div>
-                        <Link to="/dashboard" onClick={() => setShowUserMenu(false)}
+                        <Link to={user?.role === 'doctor' ? '/doctor' : user?.role === 'admin' ? '/admin' : '/dashboard'} onClick={() => setShowUserMenu(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
                           <User className="w-4 h-4" />
                           Profile
@@ -145,19 +140,6 @@ function Navbar() {
             <div className="pt-2 border-t mt-2" style={{ borderColor: '#D4DBC8' }}>
               {isAuthenticated ? (
                 <>
-                  <Link to="/dashboard" onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-[#E8EDE0]">
-                    <Calendar className="w-4 h-4" />
-                    Dashboard
-                  </Link>
-                  {(user?.role === 'admin' || user?.role === 'doctor') && (
-                    <Link to={user?.role === 'doctor' ? '/doctor' : '/admin'} onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium hover:bg-amber-50"
-                      style={{ color: '#C17A55' }}>
-                      <ShieldCheck className="w-4 h-4" />
-                      {user?.role === 'doctor' ? 'My Schedule' : 'Admin Panel'}
-                    </Link>
-                  )}
                   <button onClick={() => { logout(); setIsOpen(false) }}
                     className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full text-left">
                     <LogOut className="w-4 h-4" />
