@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "dashboard": "የእኔ ዳሽቦርድ",
+    "therapists": "ቴራፒስቶች",
+    "challenges": "ተግዳሮቶች",
+    "freeHelp": "ነፃ እርዳታ",
+    "chat": "ውይይት",
+    "aiAssistant": "የኤአይ ረዳት",
+    "home": "ዋና ገጽ"
+  },
+  "ai": {
+    "title": "የእርስዎ ኤአይ ጓደኛ",
+    "subtitle": "ሀሳብዎን እና ስሜትዎን የሚያካፍሉበት ደህንነቱ የተጠበቀ ቦታ",
+    "newChat": "አዲስ ውይይት",
+    "recentChats": "የቅርብ ጊዜ ውይይቶች",
+    "placeholder": "እንዴት እንደሚሰማዎት ያጋሩ…",
+    "welcomeTitle": "ዛሬ እንዴት ልረዳዎ እችላለሁ?"
+  },
+  "common": {
+    "theme": "ገጽታ",
+    "language": "ቋንቋ",
+    "login": "ግባ"
+  },
+  "landing": {
+    "heroTag": "በመስመር ላይ እና በአካል የሚደረጉ ክፍለ ጊዜዎች ይገኛሉ",
+    "heroTitle1": "ስነ-",
+    "heroTitle2": "ልቦናዊ ህክምና",
+    "heroSubtitle": "ለሴቶች፣ በሴቶች",
+    "heroDesc1": "ስለ ሃሳቦችዎ እና ስሜቶችዎ በግልፅ የሚወያዩበት ደህንነቱ የተጠበቀ እና ድጋፍ ሰጪ ቦታ።",
+    "heroDesc2": "ህክምናው የአጭር ወይም የረጅም ጊዜ ሊሆን ይችላል ከእርስዎ ፍጥነት ጋር አብረን እናድጋለን።",
+    "meetProvider": "አቅራቢን ያግኙ",
+    "freeResources": "ነጻ መረጃዎች"
+  }
+}

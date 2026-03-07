@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "dashboard": "My Dashboard",
+    "therapists": "Therapists",
+    "challenges": "Challenges",
+    "freeHelp": "Free Help",
+    "chat": "Chat",
+    "aiAssistant": "AI Assistant",
+    "home": "Home"
+  },
+  "ai": {
+    "title": "Your AI Companion",
+    "subtitle": "A safe space to share your thoughts and feelings",
+    "newChat": "New Chat",
+    "recentChats": "Recent Chats",
+    "placeholder": "Share how you feel…",
+    "welcomeTitle": "How can I support you today?"
+  },
+  "common": {
+    "theme": "Theme",
+    "language": "Language",
+    "login": "Login"
+  },
+  "landing": {
+    "heroTag": "Online & In-Person Sessions Available",
+    "heroTitle1": "Psycho",
+    "heroTitle2": "therapy",
+    "heroSubtitle": "for women, by women",
+    "heroDesc1": "A safe and supportive space where you can talk openly about your thoughts and feelings.",
+    "heroDesc2": "Therapy can be short-term or long-term  we grow with you at your pace.",
+    "meetProvider": "Meet a Provider",
+    "freeResources": "Free Resources"
+  }
+}

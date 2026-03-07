@@ -151,7 +151,7 @@ export default function DoctorDashboard() {
           <Clock className="w-16 h-16 mx-auto mb-4 text-[#D97706]" />
           <h2 className="text-2xl font-bold text-[var(--base-text)] mb-2">Application Pending</h2>
           <p className="text-gray-600 mb-6">
-            Your application to join HerSpace as a therapist is currently under review by our admin team.
+            Your application to join Tsinat as a therapist is currently under review by our admin team.
             We will notify you once your credentials have been verified.
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function DoctorDashboard() {
           <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
           <h2 className="text-2xl font-bold text-[var(--base-text)] mb-2">Application Rejected</h2>
           <p className="text-gray-600 mb-6">
-            Unfortunately, your application to join HerSpace was not approved at this time. Please contact support for more detailed feedback regarding your documentation.
+            Unfortunately, your application to join Tsinat was not approved at this time. Please contact support for more detailed feedback regarding your documentation.
           </p>
         </div>
       </div>
@@ -180,7 +180,7 @@ export default function DoctorDashboard() {
           <div className="bg-base-bg rounded-3xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-[var(--base-text)] mb-4">Therapist Terms & Conditions</h2>
             <div className="text-sm text-gray-600 space-y-4 mb-6 p-4 bg-[var(--base-bg)] rounded-xl border border-[#D4DBC8]">
-              <p><strong>1. Professional Conduct:</strong> As a verified therapist on HerSpace, you agree to uphold the highest standard of professional ethics and confidentiality regarding patient data and conversations.</p>
+              <p><strong>1. Professional Conduct:</strong> As a verified therapist on Tsinat, you agree to uphold the highest standard of professional ethics and confidentiality regarding patient data and conversations.</p>
               <p><strong>2. Accuracy of Diagnosis:</strong> Any advice, diagnosis, or health information you provide must fall strictly within your certified areas of expertise.</p>
               <p><strong>3. Emergency Protocols:</strong> If a user expresses intent for self-harm or harm to others, you are obligated to refer them strictly to emergency hotlines and follow standard psychiatric emergency procedures immediately.</p>
               <p><strong>4. Verification Accuracy:</strong> By accepting you reaffirm that all documents uploaded during registration are authentic, unedited, and legally bind you to practice.</p>

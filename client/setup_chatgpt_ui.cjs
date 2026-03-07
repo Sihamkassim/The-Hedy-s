@@ -1,4 +1,70 @@
-import { useState, useRef, useEffect } from 'react'
+const fs = require('fs');
+const path = require('path');
+
+const storeCode = import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+const defaultMessage = { role: 'ai', text: "Hi, I\'m your AI companion. How are you feeling today? I\'m here to listen without judgment." };
+
+const useAIChatStore = create(
+  persist(
+    (set) => ({
+      sessions: [
+        { id: 'default', title: 'New Chat', messages: [defaultMessage], updatedAt: Date.now() }
+      ],
+      activeSessionId: 'default',
+
+      addMessage: (message) => set((state) => {
+        const sessions = state.sessions.map(s => {
+          if (s.id === state.activeSessionId) {
+            const isFirstUserMsg = s.messages.length === 1 && message.role === 'user';
+            return {
+              ...s,
+              messages: [...s.messages, message],
+              title: isFirstUserMsg ? message.text.slice(0, 25) + (message.text.length > 25 ? '...' : '') : s.title,
+              updatedAt: Date.now()
+            };
+          }
+          return s;
+        });
+        return { sessions };
+      }),
+
+      createNewChat: () => set((state) => {
+        const newId = Date.now().toString();
+        return {
+          sessions: [{ id: newId, title: 'New Chat', messages: [defaultMessage], updatedAt: Date.now() }, ...state.sessions],
+          activeSessionId: newId
+        };
+      }),
+
+      setActiveSession: (id) => set({ activeSessionId: id }),
+
+      deleteChat: (id) => set((state) => {
+        const remaining = state.sessions.filter(s => s.id !== id);
+        if (remaining.length === 0) {
+          const newId = Date.now().toString();
+          return {
+             sessions: [{ id: newId, title: 'New Chat', messages: [defaultMessage], updatedAt: Date.now() }],
+             activeSessionId: newId
+          }
+        }
+        return {
+          sessions: remaining,
+          activeSessionId: state.activeSessionId === id ? remaining[0].id : state.activeSessionId
+        };
+      }),
+    }),
+    {
+      name: 'ai-chat-history',
+    }
+  )
+)
+
+export default useAIChatStore
+;
+
+const pageCode = import { useState, useRef, useEffect } from 'react'
 import { Sparkles, SendHorizonal, Loader, Heart, Leaf, AlertTriangle, Trash2, Plus, MessageSquare, Menu, X } from 'lucide-react'
 import { aiAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
@@ -6,12 +72,10 @@ import { useNavigate } from 'react-router-dom'
 import AuthModal from '../components/AuthModal'
 import ReactMarkdown from 'react-markdown'
 import useAIChatStore from '../store/aiChatStore'
-import { useTranslation } from '../hooks/useTranslation'
 
 export default function AIAssistantPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const { t } = useTranslation()
 
   const { sessions, activeSessionId, addMessage, createNewChat, setActiveSession, deleteChat } = useAIChatStore()
   const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0]
@@ -70,7 +134,7 @@ export default function AIAssistantPage() {
       )}
 
       {/* Sidebar */}
-      <div className={`absolute inset-y-0 left-0 z-50 w-72 bg-base-bg border-r border-accent/20 flex flex-col transform transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={\bsolute inset-y-0 left-0 z-50 w-72 bg-base-bg border-r border-accent/20 flex flex-col transform transition-transform duration-300 md:relative md:translate-x-0 \\}>
         <div className="p-4 border-b border-accent/20 flex items-center justify-between">
           <button 
             onClick={() => { createNewChat(); setIsSidebarOpen(false); }}
@@ -88,7 +152,7 @@ export default function AIAssistantPage() {
           {sessions.map(s => (
             <div 
               key={s.id} 
-              className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${s.id === activeSessionId ? 'bg-primary/10 text-primary' : 'hover:bg-accent/10'}`} 
+              className={\group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors \\} 
               onClick={() => { setActiveSession(s.id); setIsSidebarOpen(false); }}
             >
               <div className="flex items-center gap-3 overflow-hidden">
@@ -97,7 +161,7 @@ export default function AIAssistantPage() {
               </div>
               <button 
                 onClick={(e) => { e.stopPropagation(); deleteChat(s.id); }} 
-                className="opacity-0 md:group-hover:opacity-100 opacity-100 p-1 hover:text-red-500 transition-opacity"
+                className="opacity-0 md:group-hover:opacity-100 md:opacity-0 opacity-100 p-1 hover:text-red-500 transition-opacity"
                 title="Delete Chat"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -124,13 +188,13 @@ export default function AIAssistantPage() {
           <div className="mt-14 md:mt-0 px-6 py-3 flex items-center gap-3 text-sm font-semibold border-b bg-red-50 text-red-600 border-red-200 shrink-0">
             <AlertTriangle className="w-5 h-5 flex-shrink-0" />
             <p>
-              Crisis detected â€” please call <strong>988</strong> or text <strong>HOME to 741741</strong> for immediate help.
+              Crisis detected — please call <strong>988</strong> or text <strong>HOME to 741741</strong> for immediate help.
             </p>
           </div>
         )}
 
         {/* Messages */}
-        <div className={`flex-1 overflow-y-auto px-4 py-6 md:py-8 space-y-6 ${!emergency ? 'mt-14 md:mt-0' : ''} custom-scrollbar`}>
+        <div className={\lex-1 overflow-y-auto px-4 py-6 md:py-8 space-y-6 \ custom-scrollbar\}>
           {messages.length === 1 && (
             <div className="flex flex-col items-center justify-center h-full opacity-60 text-center px-4">
               <Sparkles className="w-12 h-12 mb-4 text-primary opacity-50" />
@@ -140,18 +204,14 @@ export default function AIAssistantPage() {
           )}
 
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} max-w-4xl mx-auto w-full group`}>
+            <div key={i} className={\lex \ max-w-4xl mx-auto w-full group\}>
               {m.role === 'ai' && (
                 <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-accent/20">
                   <Heart className="w-4 h-4 text-primary" />
                 </div>
               )}
               <div
-                className={`max-w-[85%] md:max-w-[75%] px-5 py-3.5 rounded-2xl text-sm md:text-base leading-relaxed whitespace-pre-wrap shadow-sm ${
-                  m.role === 'user'
-                    ? 'bg-primary text-primary-inverse rounded-br-sm'
-                    : 'bg-accent/10 text-base-text rounded-bl-sm border border-accent/20'
-                }`}
+                className={\max-w-[85%] md:max-w-[75%] px-5 py-3.5 rounded-2xl text-sm md:text-base leading-relaxed whitespace-pre-wrap shadow-sm \\}
               >
                 <ReactMarkdown
                   components={{
@@ -194,7 +254,7 @@ export default function AIAssistantPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder={isAuthenticated ? "Share how you're feelingâ€¦" : 'Sign in to chatâ€¦'}
+              placeholder={isAuthenticated ? "Share how you're feeling…" : 'Sign in to chat…'}
               disabled={loading}
               className="w-full pl-6 pr-14 py-4 rounded-3xl outline-none border focus:border-primary transition-colors text-sm md:text-base shadow-sm disabled:opacity-70 bg-base-bg text-base-text border-accent/30"
             />
@@ -217,3 +277,9 @@ export default function AIAssistantPage() {
     </div>
   )
 }
+;
+
+fs.writeFileSync(path.join(__dirname, 'src', 'store', 'aiChatStore.js'), storeCode);
+fs.writeFileSync(path.join(__dirname, 'src', 'pages', 'AIAssistantPage.jsx'), pageCode);
+
+console.log('UI updated');

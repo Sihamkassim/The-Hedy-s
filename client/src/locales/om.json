@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "dashboard": "Daashboordii Kiyya",
+    "therapists": "Ogeeyyii Fayyaa",
+    "challenges": "Qormaata",
+    "freeHelp": "Gargaarsa Bilisaa",
+    "chat": "Haasaa",
+    "aiAssistant": "Gargaaraa AI",
+    "home": "Fuula Duraa"
+  },
+  "ai": {
+    "title": "Hiriyaa AI Kee",
+    "subtitle": "Iddoo nagaa yaada kee itti qooddatu. Yeroo hunda as jira.",
+    "newChat": "Haasaa Haaraa",
+    "recentChats": "Haasaa Dhihoo",
+    "placeholder": "Akkam akka sitti dhagahamu qoodi…",
+    "welcomeTitle": "Hara maaliinan si gargaaru dandaa?"
+  },
+  "common": {
+    "theme": "Bifa",
+    "language": "Afaan",
+    "login": "Seeni"
+  },
+  "landing": {
+    "heroTag": "Walga'iileen Toora Interneetii fi Qaamaan Ni Argamu",
+    "heroTitle1": "Yaala",
+    "heroTitle2": "Sammuu",
+    "heroSubtitle": "Dubartootaaf, Kunuunsa Dubartootaan",
+    "heroDesc1": "Iddoo nageenyaa fi deeggarsa qabu kan itti yaada fi miira kee ifatti dubbachuu dandeessu.",
+    "heroDesc2": "Yaalli yeroo gabaabaa ykn dheeraa ta'uu danda'a  ariitii keetiin waliin guddanna.",
+    "meetProvider": "Ogeessa Quunnami",
+    "freeResources": "Qabeenya Bilisaa"
+  }
+}

@@ -76,7 +76,7 @@ function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 text-center text-xs" style={{ borderTop: '1px solid var(--primary)', color: 'var(--primary)' }}>
-          <p>&copy; 2026 HerSpace. All rights reserved. Your mental health matters.</p>
+          <p>&copy; 2026 Tsinat. All rights reserved. Your mental health matters.</p>
           <p className="mt-1">If you're in crisis, call 988 or go to your nearest emergency room.</p>
         </div>
       </div>

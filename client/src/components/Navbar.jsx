@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import AuthModal from './AuthModal'
 import ThemeToggle from './ThemeToggle'
+import LanguageToggle from './LanguageToggle'
+import { useTranslation } from '../hooks/useTranslation'
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -11,23 +13,24 @@ function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const { user, logout, isAuthenticated } = useAuth()
   const location = useLocation()
+  const { t } = useTranslation()
 
   const getFirstLink = () => {
-    if (!isAuthenticated) return { to: '/', label: 'Home', icon: Home }
-    if (user?.role === 'doctor' || user?.role === 'spiritual_leader') return { to: '/doctor', label: 'My Schedule', icon: Calendar }
-    if (user?.role === 'admin') return { to: '/admin', label: 'Admin Panel', icon: ShieldCheck }
-    return { to: '/dashboard', label: 'My Dashboard', icon: Calendar }
+    if (!isAuthenticated) return { to: '/', label: t('nav.home') || 'Home', icon: Home }
+    if (user?.role === 'doctor' || user?.role === 'spiritual_leader') return { to: '/doctor', label: t('nav.schedule') || 'My Schedule', icon: Calendar }
+    if (user?.role === 'admin') return { to: '/admin', label: t('nav.admin') || 'Admin Panel', icon: ShieldCheck }
+    return { to: '/dashboard', label: t('nav.dashboard') || 'My Dashboard', icon: Calendar }
   }
 
   const navLinks = [
     getFirstLink(),
     ...(user?.role === 'doctor' || user?.role === 'admin' || user?.role === 'spiritual_leader' ? [] : [
-      { to: '/therapists', label: 'Therapists', icon: Users },
-      { to: '/challenges', label: 'Challenges', icon: BookOpen },
-      { to: '/free-help', label: 'Free Help', icon: Shield },
+      { to: '/therapists', label: t('nav.therapists') || 'Therapists', icon: Users },
+      { to: '/challenges', label: t('nav.challenges') || 'Challenges', icon: BookOpen },
+      { to: '/free-help', label: t('nav.freeHelp') || 'Free Help', icon: Shield },
     ]),
-    { to: '/chat', label: 'Chat', icon: MessageCircle },
-    { to: '/ai-assistant', label: 'AI Assistant', icon: Sparkles },
+    { to: '/chat', label: t('nav.chat') || 'Chat', icon: MessageCircle },
+    { to: '/ai-assistant', label: t('nav.aiAssistant') || 'AI Assistant', icon: Sparkles },
   ]
 
   const isActive = (path) => location.pathname === path
@@ -43,7 +46,7 @@ function Navbar() {
                 <Leaf className="w-4 h-4 text-primary-inverse" />
               </div>
               <span className="text-xl font-bold tracking-tight text-base-text">
-                Her<span className="text-primary">Space</span>
+                Tsi<span className="text-primary">nat</span>
               </span>
             </Link>
 
@@ -64,7 +67,10 @@ function Navbar() {
 
             {/* Right Side */}
             <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
               <ThemeToggle />
+            </div>
               {isAuthenticated ? (
                 <>
                   <div className="relative">
@@ -121,7 +127,8 @@ function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden border-t px-4 py-4 space-y-1 border-accent/20 bg-base-bg text-base-text">
-            <div className="flex justify-end p-2"><ThemeToggle /></div>
+            <div className="flex justify-end p-2"><LanguageToggle />
+            <ThemeToggle /></div>
             {navLinks.map((link) => (
               <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${

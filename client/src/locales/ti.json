@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "dashboard": "ዳሽቦርድ",
+    "therapists": "ቴራፒስት",
+    "challenges": "ብድሆታት",
+    "freeHelp": "ነጻ ሓገዝ",
+    "chat": "ዕላል",
+    "aiAssistant": "ናይ AI ሓጋዚ",
+    "home": "ዋና ገጽ"
+  },
+  "ai": {
+    "title": "ናይ AI መሓዛኻ",
+    "subtitle": "ሓሳባትካን ስምዒታትካን እተካፍለሉ ድሕኑ ቦታ።",
+    "newChat": "ሓዱሽ ዕላል",
+    "recentChats": "ናይ ቀረባ ግዜ ዕላላት",
+    "placeholder": "ከመይ ከም ዝስምዓካ ኣካፍል…",
+    "welcomeTitle": "ሎሚ ብኸመይ ክሕግዘካ ይኽእል?"
+  },
+  "common": {
+    "theme": "ገጽታ",
+    "language": "ቋንቋ",
+    "login": "እቶ"
+  },
+  "landing": {
+    "heroTag": "ኣብ ኢንተርነትን ብኣካልን ዝግበሩ ቆጸራታት ኣለዉ",
+    "heroTitle1": "ስነ",
+    "heroTitle2": "ኣእምሮኣዊ ሕክምና",
+    "heroSubtitle": "ንደቂ ኣንስትዮ፡ ብክንክን",
+    "heroDesc1": "ብዛዕባ ሓሳባትክንን ስምዒታትክንን ብግልጺ ክትዛረባሉ እትኽእላ ውሑስን ደገፍ ዝህብን ቦታ።",
+    "heroDesc2": "ሕክምና ሓጺር ወይ ነዊሕ ግዜ ክወስድ ይኽእል እዩ ብናይ ባዕልኽን ፍጥነት ምሳኽን ንዓቢ።",
+    "meetProvider": "ኪኢላ ምርካብ",
+    "freeResources": "ነጻ ጸጋታት"
+  }
+}

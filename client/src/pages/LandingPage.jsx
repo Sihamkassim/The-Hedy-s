@@ -3,8 +3,10 @@ import { useState, useEffect } from "react"
 import { ArrowRight, Shield, Leaf, Star, ChevronRight } from "lucide-react"
 import { therapistAPI } from "../api/services"
 import { therapists as mockTherapists } from "../data/mockData"
+import { useTranslation } from "../hooks/useTranslation"
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   const [therapists, setTherapists] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -44,23 +46,23 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ background: "rgba(255,255,255,0.15)", color: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Online & In-Person Sessions Available
+            {t('landing.heroTag')}
           </span>
           <h1 className="text-5xl md:text-7xl font-bold text-primary-inverse leading-tight mb-6 tracking-tight">
-            Psycho<span style={{ color: "var(--accent)" }}>therapy</span>
+            {t('landing.heroTitle1')}<span style={{ color: 'var(--accent)' }}>{t('landing.heroTitle2')}</span>
             <br />
-            <span className="text-4xl md:text-5xl font-light text-primary-inverse opacity-80">for women, by care</span>
+            <span className="text-4xl md:text-5xl font-light text-primary-inverse opacity-80">{t('landing.heroSubtitle')}</span>
           </h1>
           <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-            A safe and supportive space where you can talk openly about your thoughts and feelings.
-            Therapy can be short-term or long-term — we grow with you at your pace.
+            {t('landing.heroDesc1')}
+            {t('landing.heroDesc2')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/therapists" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-base transition-all hover:shadow-xl hover:-translate-y-0.5" style={{ background: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)", color: "var(--base-text)" }}>
-              Meet a Provider <ArrowRight className="w-4 h-4" />
+              {t('landing.meetProvider')} <ArrowRight className="w-4 h-4" />
             </Link>
             <Link to="/free-help" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-primary-inverse text-base border border-var(--base-bg)/30 hover:bg-base-bg/10 transition-all">
-              <Shield className="w-4 h-4" /> Free Resources
+              <Shield className="w-4 h-4" /> {t('landing.freeResources')}
             </Link>
           </div>
         </div>

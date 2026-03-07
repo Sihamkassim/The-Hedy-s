@@ -31,40 +31,40 @@ enum TherapistStatus {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  religion  String?
-  password  String
-  pseudonym String?  @unique
-  phoneNumber String? @unique
-  role      Role     @default(patient)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  religion    String?
+  password    String
+  pseudonym   String?  @unique
+  phoneNumber String?  @unique
+  role        Role     @default(patient)
+  createdAt   DateTime @default(now())
 
   // Relations
-  appointments Appointment[] @relation("UserAppointments")
-  sentMessages Message[]            @relation("SentMessages")
-  receivedMessages Message[]        @relation("ReceivedMessages")
+  appointments      Appointment[]       @relation("UserAppointments")
+  sentMessages      Message[]           @relation("SentMessages")
+  receivedMessages  Message[]           @relation("ReceivedMessages")
   challengeProgress ChallengeProgress[]
 }
 
 model Therapist {
-  id             String   @id @default(uuid())
+  id             String          @id @default(uuid())
   name           String
-  email          String   @unique
+  email          String          @unique
   specialization String
   degree         String?
   certificate    String?
   experience     Int
-  rating         Float    @default(0)
+  rating         Float           @default(0)
   sessionPrice   Float
-  isFreeSupport  Boolean  @default(false)
+  isFreeSupport  Boolean         @default(false)
   profileImage   String?
-  availability   Json     // Storing array of available times
+  availability   Json // Storing array of available times
   bio            String
   status         TherapistStatus @default(pending)
-  termsAccepted  Boolean  @default(false)
-  createdAt      DateTime @default(now())
+  termsAccepted  Boolean         @default(false)
+  createdAt      DateTime        @default(now())
 
   // Relations
   appointments Appointment[]
@@ -87,19 +87,20 @@ model SpiritualLeader {
 }
 
 model Appointment {
-  id          String   @id @default(uuid())
-  userId      String
-  therapistId String?
-  spiritualId String?
-  date        DateTime
-  time        String
-  mpesaCheckoutId String? @unique
-  videoUrl    String?
-  status      AppointmentStatus @default(pending)
-  createdAt   DateTime @default(now())
+  id              String            @id @default(uuid())
+  userId          String
+  therapistId     String?
+  spiritualId     String?
+  date            DateTime
+  time            String
+  mpesaCheckoutId String?           @unique
+  videoUrl        String?
+  status          AppointmentStatus @default(pending)
+  transactions    Transaction[]
+  createdAt       DateTime          @default(now())
 
-  user        User      @relation("UserAppointments", fields: [userId], references: [id])
-  therapist   Therapist? @relation(fields: [therapistId], references: [id])
+  user            User             @relation("UserAppointments", fields: [userId], references: [id])
+  therapist       Therapist?       @relation(fields: [therapistId], references: [id])
   spiritualLeader SpiritualLeader? @relation("SpiritualAppointments", fields: [spiritualId], references: [id])
 }
 
@@ -110,32 +111,32 @@ model Message {
   message    String
   createdAt  DateTime @default(now())
 
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
 
 model Challenge {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  duration    Int      // Duration in days
-  isRepetitive Boolean @default(true)
-  dailyTasks  String[]
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  duration     Int // Duration in days
+  isRepetitive Boolean  @default(true)
+  dailyTasks   String[]
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   progress ChallengeProgress[]
 }
 
 model ChallengeProgress {
-  id            String   @id @default(uuid())
-  userId        String
-  challengeId   String
-  completedDays Int      @default(0)
+  id                 String     @id @default(uuid())
+  userId             String
+  challengeId        String
+  completedDays      Int        @default(0)
   completedTaskDates DateTime[] // Dates when tasks were completed
-  progress      Float    @default(0)
-  lastLogDate   DateTime?
-  createdAt     DateTime @default(now())
+  progress           Float      @default(0)
+  lastLogDate        DateTime?
+  createdAt          DateTime   @default(now())
 
   user      User      @relation(fields: [userId], references: [id])
   challenge Challenge @relation(fields: [challengeId], references: [id])
@@ -150,17 +151,37 @@ model SupportResource {
 }
 
 model Document {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   filename  String
   type      String
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
   chunks    DocumentChunk[]
 }
 
 model DocumentChunk {
-  id         String   @id @default(uuid())
+  id         String                       @id @default(uuid())
   content    String
   documentId String
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document   Document                     @relation(fields: [documentId], references: [id], onDelete: Cascade)
   embedding  Unsupported("vector(1024)")?
+}
+
+enum TransactionStatus {
+  pending
+  completed
+  failed
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  appointmentId   String
+  amount          Float
+  mpesaCheckoutId String?           @unique
+  status          TransactionStatus @default(pending)
+  phoneNumber     String // The number the user typed in the UI
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
 }

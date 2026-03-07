@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "dashboard": "Dhashboodyga",
+    "therapists": "Daaweeyayaasha",
+    "challenges": "Caqabadaha",
+    "freeHelp": "Caawinaad Bilaash ah",
+    "chat": "Sheeko",
+    "aiAssistant": "Caawiyaha AI",
+    "home": "Bogga Hore"
+  },
+  "ai": {
+    "title": "Saaxiibkaaga AI",
+    "subtitle": "Meel ammaan ah oo aad ku wadaagto fikradahaaga.",
+    "newChat": "Sheeko Cusub",
+    "recentChats": "Sheekooyinkii U Dambeeyay",
+    "placeholder": "La wadaag sida aad dareemeyso…",
+    "welcomeTitle": "Sidee baan ku caawin karaa maanta?"
+  },
+  "common": {
+    "theme": "Mawduuca",
+    "language": "Luqadda",
+    "login": "Gal"
+  },
+  "landing": {
+    "heroTag": "Kulamada Khadka Tooska ah & Kuwa Fool-ka-foolka ah waa la heli karaa",
+    "heroTitle1": "Daaweynta",
+    "heroTitle2": "Dhimirka",
+    "heroSubtitle": "dumarka, daryeelka haweenka",
+    "heroDesc1": "Goono ammaan ah oo taageero leh oo aad si furan ugaga hadli karto fikradahaaga iyo dareenkaaga.",
+    "heroDesc2": "Daaweyntu waxay noqon kartaa waqti gaaban ama waqti dheer  adiga ayaan kugula koreynaa xawaarahaaga.",
+    "meetProvider": "La Kulmo Daryeele",
+    "freeResources": "Khayraadka Bilaashka H"
+  }
+}
