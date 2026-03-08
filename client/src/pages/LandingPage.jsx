@@ -144,6 +144,38 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+
+        {/* PWA Install Button — bottom-right of hero */}
+        <div className="absolute bottom-5 right-5 z-20">
+          <button
+            className="group flex items-center gap-2.5 rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-lg backdrop-blur-md transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+            style={{
+              background: "color-mix(in srgb, var(--base-bg) 18%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--base-bg) 36%, transparent)",
+              color: "var(--primary-inverse)",
+            }}
+          >
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-xl flex-shrink-0"
+              style={{ background: "color-mix(in srgb, var(--base-bg) 22%, transparent)" }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v13M7 11l5 5 5-5"/>
+                <path d="M5 20h14"/>
+              </svg>
+            </span>
+            <div className="text-left leading-tight">
+              <p className="text-[10px] opacity-70 font-normal">Install the app</p>
+              <p className="text-xs font-bold">Tsinat PWA</p>
+            </div>
+            <span
+              className="ml-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+              style={{ background: "color-mix(in srgb, var(--accent) 80%, transparent)", color: "var(--primary-inverse)" }}
+            >
+              Free
+            </span>
+          </button>
+        </div>
       </section>
 
       {/* Blog Articles */}

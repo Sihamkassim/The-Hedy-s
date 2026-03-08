@@ -1,0 +1,473 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tsinat App — Ad Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1a2e 0%, #0a0a0f 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
+        }
+        .phone-glow {
+            position: absolute; width: 440px; height: 900px; border-radius: 50px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.15) 0%, transparent 70%);
+            filter: blur(30px); pointer-events: none;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        @keyframes glowPulse { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+        .phone-wrap { position: relative; z-index: 1; }
+        .btn-side { position: absolute; background: #2a2a2a; border-radius: 3px; }
+        .btn-vol-up   { left: -12px; top: 140px; width: 4px; height: 40px; }
+        .btn-vol-down { left: -12px; top: 195px; width: 4px; height: 40px; }
+        .btn-power    { right: -12px; top: 165px; width: 4px; height: 60px; }
+        .phone-container {
+            width: 393px; height: 852px; background: #fff; border-radius: 50px;
+            overflow: hidden; position: relative;
+            box-shadow: 0 0 0 10px #1c1c1e, 0 0 0 11px #3a3a3c, 0 40px 80px rgba(0,0,0,.8), 0 8px 20px rgba(0,0,0,.5);
+        }
+        .dynamic-island {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 34px; background: #111; border-radius: 20px; z-index: 40;
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; gap: 5px;
+        }
+        .di-camera { width: 10px; height: 10px; background: #1c1c1e; border-radius: 50%; border: 2px solid #2d2d2f; }
+        .di-dot    { width: 5px; height: 5px; background: #0a84ff; border-radius: 50%; animation: cameraBlink 3s infinite; }
+        @keyframes cameraBlink { 0%,90%,100%{opacity:1} 95%{opacity:.3} }
+        .status-bar {
+            position: absolute; top: 0; width: 100%; height: 56px;
+            display: flex; align-items: flex-end; justify-content: space-between;
+            padding: 0 24px 8px; z-index: 30; color: #111;
+            font-size: 12px; font-weight: 600;
+        }
+        .feed-scroll { height: 100%; overflow-y: auto; overflow-x: hidden; background: #fafafa; }
+        .feed-scroll::-webkit-scrollbar { display: none; }
+        .insta-top {
+            position: sticky; top: 0;
+            background: rgba(250,250,250,.97); backdrop-filter: blur(12px);
+            border-bottom: 1px solid #efefef;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 16px; z-index: 20; padding-top: 58px;
+        }
+        .insta-logo { font-size: 22px; font-weight: 800; letter-spacing: -.5px; color: #111; font-style: italic; }
+        .stories-row {
+            display: flex; gap: 14px; padding: 12px 16px;
+            overflow-x: auto; border-bottom: 1px solid #efefef; background: #fff;
+        }
+        .stories-row::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+        .story-ring {
+            width: 58px; height: 58px; border-radius: 50%; padding: 2px;
+            background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+        }
+        .story-ring.seen { background: #dbdbdb; }
+        .story-ring-inner {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 3px solid #fff; overflow: hidden; background: #eee;
+        }
+        .story-ring-inner img { width: 100%; height: 100%; object-fit: cover; }
+        .story-label { font-size: 10px; color: #262626; text-align: center; max-width: 58px; overflow: hidden; white-space: nowrap; }
+        .post { background: #fff; margin-bottom: 6px; }
+        .post-header { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+        .post-user { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .username { font-weight: 600; font-size: 13.5px; color: #262626; }
+        .location { font-size: 11px; color: #8e8e8e; }
+        .post-img-wrap { width: 100%; aspect-ratio: 1/1; overflow: hidden; position: relative; background: #e8e8e8; }
+        .post-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .post-actions { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px 4px; }
+        .post-actions-left { display: flex; gap: 16px; font-size: 22px; color: #262626; }
+        .like-count { padding: 0 14px 4px; font-size: 13.5px; font-weight: 600; color: #262626; }
+        .post-caption { padding: 2px 14px 12px; font-size: 13.5px; color: #262626; line-height: 1.5; }
+        .post-caption strong { font-weight: 600; }
+        .comment-hint { padding: 0 14px 8px; font-size: 12px; color: #8e8e8e; }
+        .post-time { padding: 0 14px 14px; font-size: 10px; color: #c7c7c7; letter-spacing: .3px; text-transform: uppercase; }
+        .img-dots { display:flex; justify-content:center; gap:4px; padding:6px 0 0; }
+        .img-dot { width:5px; height:5px; border-radius:50%; background:#dbdbdb; }
+        .img-dot.active { background:#3897f0; width:14px; border-radius:3px; }
+        /* ─── Ad Overlay ─── */
+        .ad-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0);
+            display: flex; align-items: flex-end; justify-content: center; padding-bottom: 90px;
+            z-index: 60; pointer-events: none;
+            transition: background .5s ease, backdrop-filter .5s;
+        }
+        .ad-overlay.active {
+            background: rgba(10,10,20,.55);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            pointer-events: all;
+        }
+        .ad-card {
+            width: 88%; background: #fff; border-radius: 28px; padding: 28px 22px 22px;
+            box-shadow: 0 -8px 40px rgba(0,0,0,.12), 0 30px 60px rgba(0,0,0,.2);
+            transform: translateY(120%) scale(.92); opacity: 0;
+            transition: transform .65s cubic-bezier(.16,1,.3,1), opacity .5s ease;
+            will-change: transform, opacity;
+            border: 1px solid rgba(0,0,0,.06);
+        }
+        .ad-overlay.active .ad-card { transform: translateY(0) scale(1); opacity: 1; }
+        .ad-app-header { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+        .ad-icon {
+            width:56px; height:56px;
+            background: linear-gradient(145deg,#d1fae5,#a7f3d0);
+            border-radius:16px; display:flex; align-items:center; justify-content:center;
+            font-size:26px; color:#059669;
+            box-shadow: 0 4px 14px rgba(16,185,129,.3); flex-shrink:0;
+        }
+        .ad-app-name { font-size:18px; font-weight:700; color:#111; line-height:1.2; }
+        .ad-app-tag  { font-size:12px; color:#6b7280; font-weight:500; }
+        .ad-badge {
+            margin-left:auto; background:#ecfdf5; color:#059669;
+            padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600;
+            border:1px solid #a7f3d0;
+        }
+        .ad-features { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+        .feature-pill {
+            background:#f3f4f6; color:#374151; padding:6px 12px; border-radius:99px;
+            font-size:12px; font-weight:500; display:flex; align-items:center; gap:5px;
+        }
+        .feature-pill i { color:#059669; font-size:11px; }
+        .ad-headline { font-size:20px; font-weight:800; color:#111; line-height:1.3; margin-bottom:8px; }
+        .ad-headline span { background:linear-gradient(135deg,#059669,#34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .ad-sub { font-size:13.5px; color:#6b7280; line-height:1.6; margin-bottom:18px; }
+        .social-proof {
+            background:#f9fafb; border:1px solid #e5e7eb; border-radius:16px;
+            padding:12px 14px; display:flex; align-items:center; gap:12px; margin-bottom:18px;
+        }
+        .proof-avatars { display:flex; }
+        .proof-avatars img {
+            width:28px; height:28px; border-radius:50%;
+            border:2px solid #fff; margin-left:-8px; object-fit:cover;
+        }
+        .proof-avatars img:first-child { margin-left:0; }
+        .proof-text { font-size:12.5px; color:#374151; font-weight:500; }
+        .proof-text strong { color:#111; }
+        .live-dot {
+            width:8px; height:8px; border-radius:50%; background:#10b981;
+            margin-left:auto; flex-shrink:0; animation:livePulse 1.5s ease-in-out infinite;
+        }
+        @keyframes livePulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
+        .btn-cta {
+            display:block; width:100%; padding:16px;
+            background:linear-gradient(135deg,#059669 0%,#34d399 100%);
+            color:#fff; font-size:15px; font-weight:700; text-align:center;
+            border-radius:16px; text-decoration:none; border:none; cursor:pointer;
+            box-shadow:0 8px 24px rgba(16,185,129,.45);
+            transition:transform .15s ease, box-shadow .15s ease;
+            letter-spacing:.2px; position:relative; overflow:hidden;
+        }
+        .btn-cta::after {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(135deg,rgba(255,255,255,.2),transparent); border-radius:16px;
+        }
+        .btn-cta.pressed { transform:scale(.95); box-shadow:0 4px 12px rgba(16,185,129,.3); }
+        .ripple {
+            position:absolute; border-radius:50%; background:rgba(255,255,255,.5);
+            transform:scale(0); animation:rippleAnim .6s linear forwards; pointer-events:none;
+        }
+        @keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
+        .btn-skip {
+            display:block; width:100%; text-align:center; margin-top:12px;
+            font-size:13px; color:#9ca3af; font-weight:500; cursor:pointer;
+            border:none; background:none; padding:4px;
+        }
+        .bottom-nav {
+            position:absolute; bottom:0; width:100%; height:84px;
+            background:rgba(255,255,255,.97); border-top:1px solid #efefef;
+            display:flex; justify-content:space-around; align-items:center;
+            z-index:30; padding-bottom:20px;
+        }
+        .bottom-nav i { font-size:22px; color:#8e8e8e; }
+        .bottom-nav i.active { color:#111; }
+        .cursor-icon {
+            position:absolute; font-size:38px; z-index:110; pointer-events:none;
+            filter:drop-shadow(0 4px 12px rgba(0,0,0,.6)); color:#fff; opacity:0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-glow"></div>
+
+<div class="phone-wrap">
+    <div class="btn-side btn-vol-up"></div>
+    <div class="btn-side btn-vol-down"></div>
+    <div class="btn-side btn-power"></div>
+
+    <div class="phone-container">
+        <div class="dynamic-island">
+            <div class="di-camera"></div>
+            <div class="di-dot"></div>
+        </div>
+
+        <div class="status-bar">
+            <span>9:41</span>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#111"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#111"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#111"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" fill="#d1d1d6"/></svg>
+                <svg width="16" height="12" viewBox="0 0 24 18" fill="none"><path d="M1 4.5C4.8 1 9.2 0 12 0s7.2 1 11 4.5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4 8c2.2-2 5-3 8-3s5.8 1 8 3" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M7.5 11.5c1.3-1.3 2.8-2 4.5-2s3.2.7 4.5 2" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="#111"/></svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="#111" stroke-width="1.2"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#111"/><path d="M22.5 4.5v3a1.5 1.5 0 000-3z" fill="#111"/></svg>
+            </div>
+        </div>
+
+        <div class="feed-scroll" id="feedScroll">
+
+            <!-- Instagram top bar -->
+            <div class="insta-top">
+                <span class="insta-logo">Instagram</span>
+                <div style="display:flex;gap:18px;font-size:22px;color:#111;">
+                    <i class="far fa-heart"></i>
+                    <i class="far fa-paper-plane"></i>
+                </div>
+            </div>
+
+            <!-- Stories -->
+            <div class="stories-row">
+                <div class="story-item">
+                    <div class="story-ring"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">Your story</span>
+                </div>
+                <div class="story-item">
+                    <div class="story-ring"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">michael_k</span>
+                </div>
+                <div class="story-item">
+                    <div class="story-ring"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">sara.yem</span>
+                </div>
+                <div class="story-item">
+                    <div class="story-ring"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">james_t</span>
+                </div>
+                <div class="story-item">
+                    <div class="story-ring seen"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1542206395-9feb3edaa68d?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">lena.art</span>
+                </div>
+                <div class="story-item">
+                    <div class="story-ring seen"><div class="story-ring-inner"><img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop&crop=faces" loading="lazy"/></div></div>
+                    <span class="story-label">dani_b</span>
+                </div>
+            </div>
+
+            <!-- Post 1: Ethiopian landscape -->
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="avatar" src="https://images.unsplash.com/photo-1644982647869-85590e51c5c9?w=80&h=80&fit=crop&crop=faces" loading="lazy">
+                        <div><div class="username">explore.ethiopia</div><div class="location">Simien Mountains, Ethiopia</div></div>
+                    </div>
+                    <i class="fas fa-ellipsis" style="color:#262626;font-size:18px;"></i>
+                </div>
+                <div class="post-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1606204068946-0a72d3895d1d?w=600&h=600&fit=crop" loading="lazy">
+                </div>
+                <div class="img-dots"><div class="img-dot active"></div><div class="img-dot"></div><div class="img-dot"></div></div>
+                <div class="post-actions">
+                    <div class="post-actions-left"><i class="far fa-heart"></i><i class="far fa-comment"></i><i class="far fa-paper-plane"></i></div>
+                    <i class="far fa-bookmark" style="font-size:22px;color:#262626;"></i>
+                </div>
+                <div class="like-count">12,483 likes</div>
+                <div class="post-caption"><strong>explore.ethiopia</strong> &ldquo;Peace is not something you wish for; it&rsquo;s something you make, something you are.&rdquo; 🌿 <span style="color:#003569;">#Ethiopia #Simien #NaturePeace</span></div>
+                <div class="comment-hint">View all 94 comments</div>
+                <div class="post-time">2 hours ago</div>
+            </div>
+
+            <!-- Post 2: Mindfulness -->
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=faces" loading="lazy">
+                        <div><div class="username">mindful.moments</div><div class="location">Addis Ababa, Ethiopia</div></div>
+                    </div>
+                    <i class="fas fa-ellipsis" style="color:#262626;font-size:18px;"></i>
+                </div>
+                <div class="post-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=600&fit=crop" loading="lazy">
+                </div>
+                <div class="post-actions">
+                    <div class="post-actions-left"><i class="fas fa-heart" style="color:#ed4956;"></i><i class="far fa-comment"></i><i class="far fa-paper-plane"></i></div>
+                    <i class="far fa-bookmark" style="font-size:22px;color:#262626;"></i>
+                </div>
+                <div class="like-count">8,217 likes</div>
+                <div class="post-caption"><strong>mindful.moments</strong> Healing isn&rsquo;t linear. Take your time &mdash; there is strength in seeking help. 💚 <span style="color:#003569;">#MentalHealth #YouAreNotAlone #SelfCare</span></div>
+                <div class="comment-hint">View all 211 comments</div>
+                <div class="post-time">5 hours ago</div>
+            </div>
+
+            <!-- Post 3: Therapy -->
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img class="avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=faces" loading="lazy">
+                        <div><div class="username">dev_zeynab</div><div class="location">Dire Dawa, Ethiopia</div></div>
+                    </div>
+                    <i class="fas fa-ellipsis" style="color:#262626;font-size:18px;"></i>
+                </div>
+                <div class="post-img-wrap" style="aspect-ratio:4/5;">
+                    <img src="https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?w=600&h=750&fit=crop" loading="lazy">
+                </div>
+                <div class="post-actions">
+                    <div class="post-actions-left"><i class="far fa-heart"></i><i class="far fa-comment"></i><i class="far fa-paper-plane"></i></div>
+                    <i class="fas fa-bookmark" style="font-size:22px;color:#262626;"></i>
+                </div>
+                <div class="like-count">3,891 likes</div>
+                <div class="post-caption"><strong>dev_zeynab</strong> Started therapy 6 months ago. Best decision I ever made. If you&rsquo;ve been thinking about it &mdash; just take the first step. 🌸 <span style="color:#003569;">#TherapyWorks #BraveStep</span></div>
+                <div class="comment-hint">View all 308 comments</div>
+                <div class="post-time">Yesterday</div>
+            </div>
+
+            <div style="height:400px;background:#fafafa;"></div>
+        </div>
+
+        <!-- Bottom nav -->
+        <div class="bottom-nav">
+            <i class="fas fa-house active"></i>
+            <i class="fas fa-magnifying-glass"></i>
+            <i class="far fa-square-plus"></i>
+            <i class="far fa-heart"></i>
+            <i class="far fa-circle-user"></i>
+        </div>
+
+        <!-- Ad overlay -->
+        <div class="ad-overlay" id="adOverlay">
+            <div class="ad-card" id="adCard">
+                <div class="ad-app-header">
+                    <div class="ad-icon"><i class="fas fa-spa"></i></div>
+                    <div>
+                        <div class="ad-app-name">Tsinat</div>
+                        <div class="ad-app-tag">Mental Wellness Platform</div>
+                    </div>
+                    <div class="ad-badge">● Live</div>
+                </div>
+                <div class="ad-features">
+                    <div class="feature-pill"><i class="fas fa-user-doctor"></i> Therapists</div>
+                    <div class="feature-pill"><i class="fas fa-users"></i> Groups</div>
+                    <div class="feature-pill"><i class="fas fa-robot"></i> AI Guide</div>
+                    <div class="feature-pill"><i class="fas fa-shield-heart"></i> Private</div>
+                </div>
+                <div class="ad-headline">Your mental health<br>journey starts <span>here.</span></div>
+                <div class="ad-sub">Connect with licensed therapists, join safe community groups, and access 24/7 AI support &mdash; built for Ethiopians.</div>
+                <div class="social-proof">
+                    <div class="proof-avatars">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop&crop=faces">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=faces">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&h=60&fit=crop&crop=faces">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop&crop=faces">
+                    </div>
+                    <div class="proof-text"><strong>500+ professionals</strong><br>actively helping users</div>
+                    <div class="live-dot"></div>
+                </div>
+                <a href="https://tsinat.netlify.app/" target="_blank" class="btn-cta" id="visitBtn">
+                    Get Started Free &nbsp;<i class="fas fa-arrow-right"></i>
+                </a>
+                <button class="btn-skip" onclick="closeAd()">Not now</button>
+            </div>
+        </div>
+
+        <!-- Hand cursor -->
+        <i class="fas fa-hand-point-up cursor-icon" id="fakeCursor"></i>
+    </div>
+</div>
+
+<script>
+    const feedEl    = document.getElementById('feedScroll');
+    const adOverlay = document.getElementById('adOverlay');
+    const visitBtn  = document.getElementById('visitBtn');
+    const cursor    = document.getElementById('fakeCursor');
+    let triggered   = false;
+    let scrollRaf   = null;
+
+    /* Smooth eased scroll */
+    function smoothScrollTo(el, target, duration) {
+        const start = el.scrollTop, change = target - start, startTs = performance.now();
+        function ease(t) { return t < .5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+        function step(ts) {
+            const p = Math.min((ts - startTs) / duration, 1);
+            el.scrollTop = start + change * ease(p);
+            if (p < 1) scrollRaf = requestAnimationFrame(step);
+        }
+        if (scrollRaf) cancelAnimationFrame(scrollRaf);
+        scrollRaf = requestAnimationFrame(step);
+    }
+
+    /* Scroll sequence */
+    setTimeout(() => {
+        smoothScrollTo(feedEl, 240, 1800);           // drift past stories
+        setTimeout(() => smoothScrollTo(feedEl, 680, 2600), 2800);   // settle on post 2
+        setTimeout(() => smoothScrollTo(feedEl, 1580, 1500), 6600);  // rush to trigger
+    }, 1500);
+
+    feedEl.addEventListener('scroll', () => {
+        if (!triggered && feedEl.scrollTop > 1200) {
+            triggered = true;
+            if (scrollRaf) cancelAnimationFrame(scrollRaf);
+            setTimeout(showAd, 500);
+        }
+    });
+
+    function showAd() {
+        adOverlay.classList.add('active');
+        setTimeout(animateCursorTap, 950);
+    }
+
+    function animateCursorTap() {
+        const phone    = document.querySelector('.phone-container');
+        const btnRect  = visitBtn.getBoundingClientRect();
+        const phRect   = phone.getBoundingClientRect();
+        const tx = btnRect.left - phRect.left + btnRect.width  / 2 - 18;
+        const ty = btnRect.top  - phRect.top  + btnRect.height / 2 - 20;
+        const sx = phRect.width  * 0.78;
+        const sy = phRect.height * 0.88;
+
+        Object.assign(cursor.style, { left: sx+'px', top: sy+'px', opacity: '0', transform: 'scale(1.3) rotate(12deg)', transition: 'none' });
+
+        requestAnimationFrame(() => {
+            Object.assign(cursor.style, {
+                transition: 'opacity .35s ease, left 1s cubic-bezier(.16,1,.3,1), top 1s cubic-bezier(.16,1,.3,1), transform .35s ease',
+                opacity: '1', transform: 'scale(1) rotate(0deg)',
+                left: tx+'px', top: ty+'px'
+            });
+        });
+
+        setTimeout(() => {
+            cursor.style.transition = 'transform .12s ease, opacity .12s ease';
+            cursor.style.transform  = 'scale(.78) rotate(0deg)';
+            spawnRipple(visitBtn);
+            visitBtn.classList.add('pressed');
+            setTimeout(() => {
+                cursor.style.transform = 'scale(1) rotate(0deg)';
+                visitBtn.classList.remove('pressed');
+                setTimeout(() => { cursor.style.opacity = '0'; }, 300);
+                setTimeout(() => window.open('https://tsinat.netlify.app/', '_blank'), 650);
+            }, 180);
+        }, 1030);
+    }
+
+    function spawnRipple(btn) {
+        const r = document.createElement('span');
+        r.classList.add('ripple');
+        const s = Math.max(btn.offsetWidth, btn.offsetHeight);
+        Object.assign(r.style, { width:s+'px', height:s+'px', left:(btn.offsetWidth/2-s/2)+'px', top:(btn.offsetHeight/2-s/2)+'px' });
+        btn.appendChild(r);
+        r.addEventListener('animationend', () => r.remove());
+    }
+
+    function closeAd() {
+        const card = document.getElementById('adCard');
+        Object.assign(card.style, { transform:'translateY(100%) scale(.92)', opacity:'0' });
+        setTimeout(() => {
+            adOverlay.classList.remove('active');
+            card.style.transform = card.style.opacity = '';
+        }, 500);
+    }
+
+    visitBtn.addEventListener('click', () => spawnRipple(visitBtn));
+</script>
+</body>
+</html>
