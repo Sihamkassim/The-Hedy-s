@@ -25,7 +25,7 @@
     "heroTag": "Online & In-Person Sessions Available",
     "heroTitle1": "Psycho",
     "heroTitle2": "therapy",
-    "heroSubtitle": "for women, by women",
+    "heroSubtitle": "Online & In-Person Sessions Available",
     "heroDesc1": "A safe and supportive space where you can talk openly about your thoughts and feelings.",
     "heroDesc2": "Therapy can be short-term or long-term  we grow with you at your pace.",
     "meetProvider": "Meet a Provider",
@@ -52,5 +52,11 @@
         "summary": "In Ethiopia, women who have suffered sexual assault often stay silent out of fear and shame. This blog explains trauma, how to heal, and how to get help anonymously."
       }
     ]
+  },
+  "payment": {
+    "title": "Complete Payment",
+    "success": "Payment Successful!",
+    "failed": "Payment Failed",
+    "pending": "Waiting for Payment"
   }
 }

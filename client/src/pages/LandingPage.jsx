@@ -4,9 +4,11 @@ import { ArrowRight, Shield, Leaf, Star, ChevronRight } from "lucide-react"
 import { therapistAPI } from "../api/services"
 import { therapists as mockTherapists } from "../data/mockData"
 import { useTranslation } from "../hooks/useTranslation"
+import { useTheme } from "../context/ThemeContext"
 
 export default function LandingPage() {
   const { t } = useTranslation();
+  const { theme } = useTheme()
   const [therapists, setTherapists] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -35,35 +37,111 @@ export default function LandingPage() {
     { name: "Priya M.", quote: "The mindfulness challenge helped me rediscover peace in my daily life.", role: "Challenge Participant" },
   ]
 
+  const blogImages = [
+    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+    "https://iili.io/qzyGS1t.jpg",
+    "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80",
+    "https://iili.io/qzy146X.md.jpg "
+  ]
+
   const displayTherapists = therapists.length > 0 ? therapists : mockTherapists.slice(0, 3)
+
+  const heroThemeImages = {
+    'theme-lavender': '/Lavender.jfif',
+    'theme-green': '/green.jfif',
+    'theme-earth': '/earth.jfif',
+    'theme-pink': '/pink.jfif'
+  }
+
+  const heroBackgroundImage = heroThemeImages[theme] || '/Lavender.jfif'
 
   return (
     <div className="min-h-screen" style={{ background: "var(--base-bg)" }}>
       {/* Hero */}
-      <section className="relative overflow-hidden py-24 px-4" style={{ background: "linear-gradient(160deg, var(--base-text) 0%, var(--primary) 50%, var(--primary) 100%)" }}>
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10" style={{ background: "var(--secondary)", transform: "translate(30%, -30%)" }} />
-        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full opacity-10" style={{ background: "var(--accent)", transform: "translate(-30%, 30%)" }} />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ background: "rgba(255,255,255,0.15)", color: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            {t('landing.heroTag')}
-          </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-primary-inverse leading-tight mb-6 tracking-tight">
-            {t('landing.heroTitle1')}<span style={{ color: 'var(--accent)' }}>{t('landing.heroTitle2')}</span>
-            <br />
-            <span className="text-4xl md:text-5xl font-light text-primary-inverse opacity-80">{t('landing.heroSubtitle')}</span>
-          </h1>
-          <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-            {t('landing.heroDesc1')}
-            {t('landing.heroDesc2')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/therapists" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-base transition-all hover:shadow-xl hover:-translate-y-0.5" style={{ background: "color-mix(in srgb, var(--base-bg) 80%, var(--primary) 20%)", color: "var(--base-text)" }}>
-              {t('landing.meetProvider')} <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link to="/free-help" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-primary-inverse text-base border border-var(--base-bg)/30 hover:bg-base-bg/10 transition-all">
-              <Shield className="w-4 h-4" /> {t('landing.freeResources')}
-            </Link>
+      <section className="relative overflow-hidden px-4 py-24 md:py-28">
+        <div className="absolute inset-0">
+          <img
+            src={heroBackgroundImage}
+            alt="Theme hero background"
+            className="h-full w-full object-cover"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(120deg, color-mix(in srgb, var(--base-text) 80%, transparent) 0%, color-mix(in srgb, var(--primary) 72%, transparent) 52%, color-mix(in srgb, var(--accent) 65%, transparent) 100%)"
+            }}
+          />
+        </div>
+
+        <div className="absolute top-0 right-0 h-80 w-80 rounded-full opacity-25 blur-3xl" style={{ background: "color-mix(in srgb, var(--secondary) 65%, transparent)", transform: "translate(25%, -20%)" }} />
+        <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full opacity-25 blur-3xl" style={{ background: "color-mix(in srgb, var(--accent) 55%, transparent)", transform: "translate(-15%, 25%)" }} />
+
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="grid items-center gap-10 md:grid-cols-12">
+            <div className="md:col-span-7 text-center md:text-left">
+              <span
+                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold mb-6"
+                style={{
+                  background: "color-mix(in srgb, var(--base-bg) 22%, transparent)",
+                  color: "var(--primary-inverse)",
+                  border: "1px solid color-mix(in srgb, var(--base-bg) 30%, transparent)"
+                }}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                {t('landing.heroTag')}
+              </span>
+
+              <h1 className="text-5xl md:text-7xl font-bold text-primary-inverse leading-[1.05] mb-6 tracking-tight">
+                {t('landing.heroTitle1')} <span style={{ color: 'var(--accent)' }}>{t('landing.heroTitle2')}</span>
+                <br />
+                <span className="text-3xl md:text-5xl font-medium opacity-90">{t('landing.heroSubtitle')}</span>
+              </h1>
+
+              <p className="text-lg md:text-xl mb-10 max-w-2xl leading-relaxed mx-auto md:mx-0" style={{ color: "color-mix(in srgb, var(--base-bg) 84%, transparent)" }}>
+                {t('landing.heroDesc1')} {t('landing.heroDesc2')}
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Link
+                  to="/therapists"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-base transition-all hover:shadow-xl hover:-translate-y-0.5"
+                  style={{ background: "var(--base-bg)", color: "var(--base-text)" }}
+                >
+                  {t('landing.meetProvider')} <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/free-help"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-primary-inverse text-base transition-all"
+                  style={{ border: "1px solid color-mix(in srgb, var(--base-bg) 42%, transparent)", background: "color-mix(in srgb, var(--base-bg) 10%, transparent)" }}
+                >
+                  <Shield className="w-4 h-4" /> {t('landing.freeResources')}
+                </Link>
+              </div>
+            </div>
+
+            <div className="md:col-span-5">
+              <div
+                className="rounded-3xl p-6 md:p-7 backdrop-blur-sm"
+                style={{
+                  background: "color-mix(in srgb, var(--base-bg) 16%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--base-bg) 34%, transparent)",
+                  color: "var(--primary-inverse)"
+                }}
+              >
+                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "color-mix(in srgb, var(--base-bg) 70%, transparent)" }}>
+                  Personalized Support
+                </p>
+                <p className="text-2xl md:text-3xl font-semibold leading-tight mb-4">
+                  Care that adapts with your theme and your journey
+                </p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-2xl px-3 py-2" style={{ background: "color-mix(in srgb, var(--base-bg) 12%, transparent)" }}>Private sessions</div>
+                  <div className="rounded-2xl px-3 py-2" style={{ background: "color-mix(in srgb, var(--base-bg) 12%, transparent)" }}>Licensed experts</div>
+                  <div className="rounded-2xl px-3 py-2" style={{ background: "color-mix(in srgb, var(--base-bg) 12%, transparent)" }}>Cultural context</div>
+                  <div className="rounded-2xl px-3 py-2" style={{ background: "color-mix(in srgb, var(--base-bg) 12%, transparent)" }}>Flexible options</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -76,17 +154,22 @@ export default function LandingPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="flex flex-col p-6 rounded-3xl border border-accent/20 shadow-sm hover:shadow-xl transition-all duration-300 bg-base-bg transform hover:-translate-y-1">
-                <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "var(--base-text)" }}>
-                  {t(`blogs.items.${i}.title`)}
-                </h3>
-                <p className="text-sm flex-grow mb-6 leading-relaxed opacity-80" style={{ color: "var(--base-text)" }}>
-                  {t(`blogs.items.${i}.summary`)}
-                </p>
-                <div className="mt-auto">
-                  <button className="inline-flex items-center gap-2 font-semibold text-sm group" style={{ color: "var(--accent)" }}>
-                    {t("blogs.readMore") || "Read more"} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
+              <div key={i} className="flex flex-col p-0 rounded-3xl border border-accent/20 shadow-sm hover:shadow-xl transition-all duration-300 bg-base-bg transform hover:-translate-y-1 overflow-hidden">
+                <div className="h-40 w-full overflow-hidden rounded-t-3xl">
+                  <img src={blogImages[i]} alt={t(`blogs.items.${i}.title`)} className="object-cover w-full h-full" style={{ minHeight: 160, maxHeight: 180 }} />
+                </div>
+                <div className="flex flex-col flex-1 p-6">
+                  <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "var(--base-text)" }}>
+                    {t(`blogs.items.${i}.title`)}
+                  </h3>
+                  <p className="text-sm flex-grow mb-6 leading-relaxed opacity-80" style={{ color: "var(--base-text)" }}>
+                    {t(`blogs.items.${i}.summary`)}
+                  </p>
+                  <div className="mt-auto">
+                    <button className="inline-flex items-center gap-2 font-semibold text-sm group" style={{ color: "var(--accent)" }}>
+                      {t("blogs.readMore") || "Read more"} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

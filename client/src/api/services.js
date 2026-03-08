@@ -87,3 +87,12 @@ export const adminAPI = {
   getAllTherapists: (params) => api.get('/admin/therapists', { params }),
   updateTherapistStatus: (id, status) => api.patch(`/admin/therapists/${id}/status`, { status })
 }
+
+export const paymentAPI = {
+  initiate: (data) => api.post('/payments/initiate', data),
+  simulate: (checkoutRequestId) => api.post('/payments/simulate', { checkoutRequestId }),
+  getTransactions: () => api.get('/payments/transactions'),
+  getTransaction: (id) => api.get(`/payments/transactions/${id}`),
+  getEarnings: () => api.get('/payments/earnings')
+}
+

@@ -1,12 +1,82 @@
 ﻿import { useState, useEffect } from 'react'
 import {
-  Users, Calendar, ShieldCheck, Trash2, CheckCircle, Loader,
+  Users, Calendar, Radio, ShieldCheck, Trash2, CheckCircle, Loader,
   Plus, X, Phone, BookOpen, BarChart3, TrendingUp, UserCheck,
   Edit3, Database, UploadCloud, FileText
 } from 'lucide-react'
 import { appointmentAPI, therapistAPI, supportAPI, challengeAPI, adminAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+
+
+import useGroupStore from '../store/groupStore'
+
+const CommunityGroupsPanel = () => {
+  const { groups, addGroup, deleteGroup } = useGroupStore()
+  const [newGroup, setNewGroup] = useState({ name: '', description: '' })
+
+  const handleAdd = (e) => {
+    e.preventDefault()
+    if (!newGroup.name) return
+    addGroup(newGroup)
+    setNewGroup({ name: '', description: '' })
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Community Groups</h2>
+      </div>
+
+      <div className="bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
+        <h3 className="text-lg font-semibold mb-4">Add New Community</h3>
+        <form onSubmit={handleAdd} className="flex gap-4 items-end">
+          <div className="flex-1">
+            <label className="block text-sm text-[var(--text-muted)] mb-1">Group Name</label>
+            <input 
+              type="text" 
+              value={newGroup.name}
+              onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+              className="w-full p-2 rounded-lg bg-[var(--background)] border border-[var(--border)]"
+              placeholder="e.g. Teenage Struggles"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm text-[var(--text-muted)] mb-1">Description</label>
+            <input 
+              type="text" 
+              value={newGroup.description}
+              onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
+              className="w-full p-2 rounded-lg bg-[var(--background)] border border-[var(--border)]"
+              placeholder="Short description"
+            />
+          </div>
+          <button type="submit" className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg flex items-center gap-2">
+            <Plus size={18} /> Add
+          </button>
+        </form>
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {groups.map(g => (
+          <div key={g.id} className="bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)] relative">
+            <button 
+              onClick={() => deleteGroup(g.id)}
+              className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+            >
+              <Trash2 size={18} />
+            </button>
+            <h3 className="font-semibold text-lg mb-2 mr-6">{g.name}</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">{g.description}</p>
+            <div className="flex items-center gap-2 text-sm text-[var(--primary)]">
+              <Users size={16} /> {g.members} Members
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 const TABS = [
   { id: 'stats',        label: 'Overview',     icon: BarChart3,   adminOnly: true },
@@ -16,6 +86,7 @@ const TABS = [
   { id: 'challenges',   label: 'Challenges',   icon: BookOpen,    adminOnly: true },
   { id: 'resources',    label: 'Resources',    icon: Phone,       adminOnly: true },
   { id: 'knowledge',    label: 'AI Knowledge', icon: Database,    adminOnly: true },
+  { id: 'groups',       label: 'Communities',  icon: Radio,       adminOnly: true },
 ]
 
 const STATUS_COLORS = {

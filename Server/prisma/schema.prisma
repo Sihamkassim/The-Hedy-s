@@ -173,12 +173,18 @@ enum TransactionStatus {
 }
 
 model Transaction {
-  id              String            @id @default(uuid())
-  appointmentId   String
-  amount          Float
-  mpesaCheckoutId String?           @unique
-  status          TransactionStatus @default(pending)
-  phoneNumber     String // The number the user typed in the UI
+  id                     String            @id @default(uuid())
+  appointmentId          String
+  amount                 Float // Total amount paid by patient
+  platformCommissionRate Float             @default(20) // Commission percentage (e.g., 20%)
+  platformCommission     Float? // Calculated commission amount
+  therapistAmount        Float? // Amount to be paid to therapist
+  mpesaCheckoutId        String?           @unique
+  mpesaReceiptNumber     String? // M-Pesa confirmation code
+  status                 TransactionStatus @default(pending)
+  phoneNumber            String // The number the user typed in the UI
+  paidToTherapist        Boolean           @default(false) // Track if therapist has been paid
+  therapistPayoutRef     String? // Reference for therapist payout
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -52,5 +52,11 @@
         "summary": "Dubartootni haleellaan saalaa irra gahe yeroo baayee qaanii irraa ni callisu. Buloogiin kun akkamitti akka fayyan ibsa."
       }
     ]
+  },
+  "payment": {
+    "title": "Kaffaltii Xumuri",
+    "success": "Kaffaltiiin Milkaa'e!",
+    "failed": "Kaffaltiiin Hin Milkoofne",
+    "pending": "Kaffaltii Eegaa Jira"
   }
 }

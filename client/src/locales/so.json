@@ -52,5 +52,11 @@
         "summary": "Dumarka la kulmay xadgudub galmo badanaa way aamusaan. Balooggan wuxuu sharxayaa bogsashada."
       }
     ]
+  },
+  "payment": {
+    "title": "Dhamaystir Lacag-bixinta",
+    "success": "Lacag-bixintu Waa Guuleysatay!",
+    "failed": "Lacag-bixintu Way Fashilantay",
+    "pending": "Waxaa La Sugayaa Lacag-bixinta"
   }
 }

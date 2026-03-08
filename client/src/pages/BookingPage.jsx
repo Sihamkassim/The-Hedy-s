@@ -46,8 +46,19 @@ export default function BookingPage() {
       } else {
         payload.therapistId = id
       }
-      await appointmentAPI.create(payload)
-      setSuccess(true)
+      const response = await appointmentAPI.create(payload)
+      const appointmentId = response.data.data.appointment.id
+      
+      // Check if session is paid or free
+      const isFreeSession = provider?.isFreeSupport || provider?.sessionPrice === 0 || provider?.priceAmount === 0 || provider?.pricePerSession === 0
+      
+      if (isFreeSession) {
+        // Free session - show success
+        setSuccess(true)
+      } else {
+        // Paid session - redirect to checkout
+        navigate(`/checkout/${appointmentId}`)
+      }
     } catch (e) {
       setError(e.response?.data?.message || "Booking failed. Please try again.")
     } finally {
