@@ -8,6 +8,7 @@ const { createServer } = require('http');
 const { PrismaClient } = require('@prisma/client');
 const { initSocket } = require('./sockets/chatSocket');
 const { errorHandler } = require('./middleware/errorHandler');
+const { corsOptions } = require('./utils/corsOptions');
 
 // Load environment variables
 dotenv.config();
@@ -21,11 +22,7 @@ initSocket(httpServer);
 
 // Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  credentials: true
-}));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
